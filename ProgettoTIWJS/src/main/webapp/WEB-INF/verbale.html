@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Verbale</title>
+</head>
+<body>
+	<h1>Dettagli Verbale</h1>
+
+	<p>
+		<strong>Codice verbale:</strong> <span th:text="${verbale.idverb}">123ABC</span>
+	</p>
+
+	<p>
+		<strong>Data verbale:</strong> <span th:text="${verbale.data}">2025-05-15</span>
+	</p>
+
+	<p>
+		<strong>Ora verbale:</strong> <span th:text="${verbale.ora}">14:30</span>
+	</p>
+
+	<p>
+		<strong>Data appello:</strong> <span th:text="${verbale.dataapp}">2025-05-15</span>
+	</p>
+
+
+
+
+
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Matricola</th>
+				<th>Cognome</th>
+				<th>Nome</th>
+				<th>Voto</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="infoverbalizzati : ${infoverbalizzati}">
+				<td th:text="${infoverbalizzati.matricola}">123456</td>
+				<td th:text="${infoverbalizzati.cognome}">Rossi</td>
+				<td th:text="${infoverbalizzati.nome}">Mario</td>
+				<td th:text="${infoverbalizzati.voto}">28</td>
+				<td th:text="${infoverbalizzati.statodivalutazione.label}">28</td>
+
+			</tr>
+		</tbody>
+
+	</table>
+
+</body>
+</html>

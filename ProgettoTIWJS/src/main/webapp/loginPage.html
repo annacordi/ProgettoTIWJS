@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Login page</title>
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="loginManagement.js" charset="utf-8" defer></script>
+
+</head>
+<body>
+	<h1>Servizi online</h1>
+
+	<form method="POST" action="/ProgettoTIWJS/CheckLogin">
+	
+	<fieldset>
+		Username: <input type="text" name="username" required> <br>
+		Password: <input type="password" name="pwd" required><br>
+		<input id="loginbutton" type="submit" value="login">
+		<p id="error_message"></p>
+	</fieldset></form>
+
+</body>
+</html>

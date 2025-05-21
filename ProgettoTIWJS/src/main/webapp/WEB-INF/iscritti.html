@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Lista Iscritti</title>
+</head>
+<body>
+	<h1>Elenco Iscritti</h1>
+
+	<table border="1">
+		<thead>
+			<tr>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='matricola', orderDirection=${orderBy == 'matricola' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Matricola </a></th>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='cognome', orderDirection=${orderBy == 'cognome' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Cognome</a></th>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='nome', orderDirection=${orderBy == 'nome' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Nome</a></th>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='email', orderDirection=${orderBy == 'email' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Email</a></th>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='corsolaurea', orderDirection=${orderBy == 'corsolaurea' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Laurea</a></th>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='voto', orderDirection=${orderBy == 'voto' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Voto</a></th>
+				<th><a
+					th:href="@{/Iscritti(appId=${iscritti[0].idapp}, orderBy='statodivalutazione', orderDirection=${orderBy == 'statodivalutazione' and orderDirection == 'ASC' ? 'DESC' : 'ASC'})}">Stato
+						Valutazione</a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="iscritti : ${iscritti}">
+				<td th:text="${iscritti.matricola}">123456</td>
+				<td th:text="${iscritti.cognome}">Rossi</td>
+				<td th:text="${iscritti.nome}">Mario</td>
+				<td th:text="${iscritti.email}">mario.rossi@email.it</td>
+				<td th:text="${iscritti.corsolaurea}">Ingegneria Informatica</td>
+				<td th:text="${iscritti.voto}">28</td>
+				<td th:text="${iscritti.statodivalutazione}">Approvato</td>
+				<td
+					th:if="${iscritti.statodivalutazione.name() != 'PUBBLICATO' and iscritti.statodivalutazione.name() != 'RIFIUTATO' and iscritti.statodivalutazione.name() != 'VERBALIZZATO'}"><a
+					th:href="@{'/ModificaStudente?studenteId=' + ${iscritti.id} + '&appId=' + ${iscritti.idapp}}">
+						<button>MODIFICA</button>
+				</a></td>
+
+			</tr>
+		</tbody>
+
+	</table>
+	<form th:action="@{'/Iscritti?appId=' + ${iscritti[0].idapp}}"
+		method="post">
+		<button type="submit">PUBBLICA</button>
+
+	</form>
+	<form th:action="@{'/PaginaVerbale?appId=' + ${iscritti[0].idapp}}"
+		method="post">
+		<button type="submit">VERBALIZZA</button>
+
+	</form>
+
+
+
+</body>
+</html>

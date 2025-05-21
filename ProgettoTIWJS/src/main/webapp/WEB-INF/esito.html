@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>esito</title>
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="loginManagement.js" charset="utf-8" defer></script>
+
+</head>
+<body>
+	<h1>Esito</h1>
+
+	<div
+		th:if="${infostud.statodivalutazione.name() != 'PUBBLICATO' and infostud.statodivalutazione.name() != 'RIFIUTATO'}">
+		<p>
+			<strong>Voto non ancora definito</strong>
+		</p>
+	</div>
+	<div th:if="${infostud.statodivalutazione.name() == 'RIFIUTATO'}">
+		<p>
+			<strong>Nome corso:</strong> <span th:text="${infostud.nomecorso}">123456</span>
+		</p>
+		<p>
+			<strong>Data appello:</strong> <span th:text="${infostud.data}">123456</span>
+		</p>
+		<p>
+			<strong>Matricola:</strong> <span th:text="${infostud.matricola}">123456</span>
+		</p>
+		<p>
+			<strong>Cognome:</strong> <span th:text="${infostud.cognome}">Rossi</span>
+		</p>
+		<p>
+			<strong>Nome:</strong> <span th:text="${infostud.nome}">Mario</span>
+		</p>
+		<p>
+			<strong>Email:</strong> <span th:text="${infostud.email}">mario.rossi@email.it</span>
+		</p>
+		<p>
+			<strong>Laurea:</strong> <span th:text="${infostud.corsolaurea}">Ingegneria
+				Informatica</span>
+		</p>
+
+
+		<p>
+			<strong>Stato Valutazione:</strong> <span
+				th:text="${infostud.statodivalutazione.label}">Pubblicato</span>
+		</p>
+		<p>
+			<strong>Il voto e' stato rifiutato</strong>
+		</p>
+
+	</div>
+	<form
+		th:action="@{'/Esito?appelloId=' + ${infostud.idapp}  + '&corsoId=' + ${infostud.idcorso}}"
+		method="post">
+		<div th:if="${infostud.statodivalutazione.name() == 'PUBBLICATO' or infostud.statodivalutazione.name() == 'VERBALIZZATO'}">
+
+
+			<p>
+				<strong>Nome corso:</strong> <span th:text="${infostud.nomecorso}">123456</span>
+			</p>
+			<p>
+				<strong>Data appello:</strong> <span th:text="${infostud.data}">123456</span>
+			</p>
+			<p>
+				<strong>Matricola:</strong> <span th:text="${infostud.matricola}">123456</span>
+			</p>
+			<p>
+				<strong>Cognome:</strong> <span th:text="${infostud.cognome}">Rossi</span>
+			</p>
+			<p>
+				<strong>Nome:</strong> <span th:text="${infostud.nome}">Mario</span>
+			</p>
+			<p>
+				<strong>Email:</strong> <span th:text="${infostud.email}">mario.rossi@email.it</span>
+			</p>
+			<p>
+				<strong>Laurea:</strong> <span th:text="${infostud.corsolaurea}">Ingegneria
+					Informatica</span>
+			</p>
+
+			<p>
+				<strong>Voto:</strong> <span th:text="${infostud.voto}">30</span>
+			</p>
+
+			<p>
+				<strong>Stato valutazione:</strong> <span
+					th:text="${infostud.statodivalutazione.label}">Pubblicato</span>
+			</p>
+			<div
+				th:if="${(infostud.voto == '18' or 
+             infostud.voto == '19' or 
+             infostud.voto == '20' or 
+             infostud.voto == '21' or 
+             infostud.voto == '22' or 
+             infostud.voto == '23' or 
+             infostud.voto == '24' or 
+             infostud.voto == '25' or 
+             infostud.voto == '26' or 
+             infostud.voto == '27' or 
+             infostud.voto == '28' or 
+             infostud.voto == '29' or 
+             infostud.voto == '30' or 
+             infostud.voto == '30L') and infostud.statodivalutazione.name() != 'VERBALIZZATO'}">
+				<button type="submit">RIFIUTA</button>
+			</div>
+		</div>
+
+
+	</form>
+
+
+</body>
+</html>

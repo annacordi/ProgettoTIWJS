@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Docente Home Page</title>
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="loginManagement.js" charset="utf-8" defer></script>
+</head>
+<body>
+	<h1>Docente HomePage</h1>
+	<p>
+		Benvenuto, <strong th:text="${username}">Nome Docente</strong>!
+	</p>
+	<h2>Lista Corsi</h2>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Corsi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="corso : ${corso}">
+				<td><a
+					th:href="@{'/DocenteHomePage?corsoId=' + ${corso.idcorso}}"
+					th:text="${corso.nomecorso}">Nome Corso</a></td>
+			</tr>
+		</tbody>
+	</table>
+
+
+	<h2>Appelli del Corso</h2>
+	<table border="1" th:if="${appelli != null}">
+		<thead>
+			<tr>
+				<th>Data Appello</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="appelli : ${appelli}">
+				<td><a th:href="@{'/Iscritti?appId=' + ${appelli.idapp}}"
+					th:text="${appelli.data}">Data Appello</a></td>
+			</tr>
+		</tbody>
+	</table>
+	<form th:action="@{ElencoVerbali}"
+		method="get">
+		<button type="submit">VERBALI</button>
+
+	</form>
+
+
+</body>
+</html>
