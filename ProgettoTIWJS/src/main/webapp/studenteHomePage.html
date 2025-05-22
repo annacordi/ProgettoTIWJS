@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Studente Home Page</title>
+  <script src="utils.js" charset="utf-8" defer></script>
+<script src="LoginPageManager.js" charset="utf-8" defer></script>
+</head>
+<body>
+  <h1>Benvenuto Studente</h1>
+
+  <!-- Vista Corsi -->
+  <div id="view-corsi" class="view visible">
+    <h2>Lista Corsi</h2>
+    <ul id="listaCorsi"></ul>
+  </div>
+
+  <!-- Vista Appelli -->
+  <div id="view-appelli" class="view">
+    <h2>Appelli per il corso: <span id="nomeCorso"></span></h2>
+    <ul id="listaAppelli"></ul>
+    <button onclick="tornaACorsi()">Indietro</button>
+  </div>
+
+  <!-- Vista Esito -->
+  <div id="view-esito" class="view">
+    <h2>Esito dell'appello</h2>
+    <div id="esitoContainer"></div>
+    <div id="cestino" ondragover="allowDrop(event)" ondrop="confermaRifiuto(event)">🗑️ Cestino</div>
+    <button onclick="tornaAAppelli()">Indietro</button>
+  </div>
+
+ 
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Docente Dashboard</title>
+<script src="utils.js" defer></script>
+<script src="LoginPageManager.js" defer></script>
+<script src="DocenteHomeManager.js" defer></script>
+</head>
+<body>
+
+	<h1>Docente Home Page</h1>
+	<p>
+		Benvenuto, <strong id="username">Nome Docente</strong>!
+	</p>
+
+	<div id="message"></div>
+	<!-- CORSI -->
+	<section>
+		<h2>Lista Corsi</h2>
+		<table id="corsiTable">
+			<tbody id="corsiBody">
+
+			</tbody>
+		</table>
+	</section>
+
+
+	<!-- APPELLI -->
+	<section id="appelliSection" style="display: none;">
+		<h2>Appelli del Corso</h2>
+		<table id="appelliTable">
+			<thead>
+				<tr>
+					<th>Data Appello</th>
+				</tr>
+			</thead>
+			<tbody id="appelliBody">
+				<!-- Populated by JS -->
+			</tbody>
+		</table>
+		<button id="verbaliButton">VERBALI</button>
+	</section>
+
+	<!-- ELENCO ISCRITTI -->
+	<section id="iscrittiSection" style="display: none;">
+		<h2>Elenco Iscritti</h2>
+		<table>
+			<thead>
+				<tr>
+					<th><a href="#" data-order="matricola">Matricola</a></th>
+					<th><a href="#" data-order="cognome">Cognome</a></th>
+					<th><a href="#" data-order="nome">Nome</a></th>
+					<th><a href="#" data-order="email">Email</a></th>
+					<th><a href="#" data-order="corsolaurea">Laurea</a></th>
+					<th><a href="#" data-order="voto">Voto</a></th>
+					<th><a href="#" data-order="statodivalutazione">Stato
+							Valutazione</a></th>
+					<th>Azioni</th>
+				</tr>
+			</thead>
+			<tbody id="iscrittiBody">
+				<!-- Populated by JS -->
+			</tbody>
+		</table>
+		<button id="pubblicaButton">PUBBLICA</button>
+		<button id="verbalizzaButton">VERBALIZZA</button>
+		  
+	</section>
+
+
+</body>
+</html>

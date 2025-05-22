@@ -14,6 +14,7 @@ import it.polimi.tiw.progetti.dao.UserDAO;
 import it.polimi.tiw.progetti.utils.ConnectionHandler;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 
 import jakarta.servlet.http.HttpServlet;
@@ -21,11 +22,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/CheckLogin")
-//@MultipartConfig
+@MultipartConfig
 public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
 
 	public CheckLogin() {
 		super();
@@ -34,14 +34,6 @@ public class CheckLogin extends HttpServlet {
 	public void init() throws ServletException {
 		this.connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
-
-		JakartaServletWebApplication webApplication = JakartaServletWebApplication.buildApplication(servletContext);
-		WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 
 	}
 
@@ -54,9 +46,7 @@ public class CheckLogin extends HttpServlet {
 		pwd = request.getParameter("pwd");
 		if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Incorrect credentials");
-			// request.getSession().setAttribute("error_message","Credentials must be not
-			// null");
+			response.getWriter().println("Incorrect credential js");
 			return;
 		}
 		// query db to authenticate for user
@@ -67,7 +57,7 @@ public class CheckLogin extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace(); // <--- add this
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			request.getSession().setAttribute("error_message", "Internal server error, retry later");
+			response.getWriter().println("Internal server error, retry later");
 			return;
 
 		}
@@ -76,23 +66,14 @@ public class CheckLogin extends HttpServlet {
 		// return an error status code and message
 		if (user == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-			// request.getSession().setAttribute("error_message","Incorrect credentials");
-			response.sendRedirect("loginPage.html");
-		} else if (user.getRole().equals("studente")) {
-			request.getSession().setAttribute("user", user);
-			response.setStatus(HttpServletResponse.SC_OK);
-			// response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			// response.sendRedirect("studenteHomePage.html");
-			response.sendRedirect(getServletContext().getContextPath() + "/StudenteHomePage");
-		} else if (user.getRole().equals("docente")) {
-			request.getSession().setAttribute("user", user);
-			response.setStatus(HttpServletResponse.SC_OK);
-			// response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			// response.sendRedirect("docenteHomePage.html");
-			response.sendRedirect(getServletContext().getContextPath() + "/DocenteHomePage");
+			response.getWriter().println("Credenziali errate");
+		} else {
+			 request.getSession().setAttribute("user", user);
+			    response.setStatus(HttpServletResponse.SC_OK);
+			    response.setCharacterEncoding("UTF-8");
+			    response.setContentType("application/json");
+			    String json = String.format("{\"username\": \"%s\", \"role\": \"%s\"}", user.getUsername(), user.getRole());
+			    response.getWriter().println(json);
 		}
 
 	}
