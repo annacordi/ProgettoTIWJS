@@ -8,15 +8,13 @@
 <script src="DocenteHomeManager.js" defer></script>
 </head>
 <body>
-
-	<h1>Docente Home Page</h1>
-	<p>
-		Benvenuto, <strong id="username">Nome Docente</strong>!
-	</p>
-
-	<div id="message"></div>
 	<!-- CORSI -->
-	<section>
+	<section id="corsiSection">
+		<h1>Docente Home Page</h1>
+		<p>
+			Benvenuto, <strong id="username">Nome Docente</strong>!
+		</p>
+
 		<h2>Lista Corsi</h2>
 		<table id="corsiTable">
 			<tbody id="corsiBody">
@@ -26,8 +24,9 @@
 	</section>
 
 
-	<!-- APPELLI -->
+
 	<section id="appelliSection" style="display: none;">
+		<!-- APPELLI -->
 		<h2>Appelli del Corso</h2>
 		<table id="appelliTable">
 			<thead>
@@ -67,6 +66,34 @@
 		<button id="verbalizzaButton">VERBALIZZA</button>
 		  
 	</section>
+	<section id="modificaStudenteSection" style="display: none;">
+		<h2>Modifica Studente</h2>
+		<form id="modificaStudenteForm">
+			<p>
+				<strong>Matricola:</strong> <span id="modMatricola"></span>
+			</p>
+			<p>
+				<strong>Cognome:</strong> <span id="modCognome"></span>
+			</p>
+			<p>
+				<strong>Nome:</strong> <span id="modNome"></span>
+			</p>
+			<p>
+				<strong>Email:</strong> <span id="modEmail"></span>
+			</p>
+			<p>
+				<strong>Laurea:</strong> <span id="modLaurea"></span>
+			</p>
+			<p>
+				<strong>Voto:</strong> <input type="text" id="modVoto" name="voto">
+			</p>
+			<p>
+				<strong>Stato Valutazione:</strong> <span id="modStato"></span>
+			</p>
+			<input id="salvaModificheButton" type="submit" value="SALVA MODIFICHE">
+		</form>
+	</section>
+	<div id="message"></div>
 
 
 </body>

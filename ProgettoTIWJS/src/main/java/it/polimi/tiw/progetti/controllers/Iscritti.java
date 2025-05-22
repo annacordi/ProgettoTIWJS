@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 import it.polimi.tiw.progetti.beans.InfoIscritti;
 import it.polimi.tiw.progetti.dao.AppelloDAO;
 import it.polimi.tiw.progetti.utils.ConnectionHandler;
@@ -57,6 +59,11 @@ public class Iscritti extends HttpServlet {
 		try {
 
 			List<InfoIscritti> iscritti = appelloDAO.cercaAppelli(orderBy, orderDirection);
+			Gson gson = new Gson();
+		    String json = gson.toJson(iscritti);
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    response.getWriter().write(json);
 
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,

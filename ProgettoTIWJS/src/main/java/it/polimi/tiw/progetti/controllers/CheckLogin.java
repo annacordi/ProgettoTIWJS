@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
-import org.thymeleaf.web.servlet.JakartaServletWebApplication;
-
 import it.polimi.tiw.progetti.beans.User;
 import it.polimi.tiw.progetti.dao.UserDAO;
 import it.polimi.tiw.progetti.utils.ConnectionHandler;

@@ -10,12 +10,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
-import org.thymeleaf.web.IWebExchange;
-import org.thymeleaf.web.servlet.JakartaServletWebApplication;
+import com.google.gson.Gson;
 
 import it.polimi.tiw.progetti.beans.InfoStudenteAppello;
 import it.polimi.tiw.progetti.dao.StudenteDAO;
@@ -28,7 +23,6 @@ import it.polimi.tiw.progetti.utils.ConnectionHandler;
 public class ModificaStudente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -42,13 +36,6 @@ public class ModificaStudente extends HttpServlet {
     	this.connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
 
-		  JakartaServletWebApplication webApplication = JakartaServletWebApplication.buildApplication(servletContext);    
-		  WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-
-		  templateResolver.setTemplateMode(TemplateMode.HTML);
-		  this.templateEngine = new TemplateEngine();
-		  this.templateEngine.setTemplateResolver(templateResolver);
-		  templateResolver.setSuffix(".html");
     }
 		
 	
@@ -63,22 +50,20 @@ public class ModificaStudente extends HttpServlet {
 		StudenteDAO studenteDAO = new StudenteDAO(connection, studenteid);
 		
 
-		
-		JakartaServletWebApplication application = JakartaServletWebApplication.buildApplication(getServletContext());
-		IWebExchange webExchange = application.buildExchange(request, response);
-		WebContext ctx = new WebContext(webExchange, request.getLocale());
-		//ctx.setVariable("username", user.getUsername());
 		try {
 			InfoStudenteAppello infostud = studenteDAO.cercoInfoStudentePubblicatoperAppello(appid);
-			ctx.setVariable("iscritto", infostud);
+			Gson gson = new Gson();
+			String json = gson.toJson(infostud);
+
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile recuperare i dati di questo studente per questo appello");
 			return;
 		}
 		
             
-	
-	    templateEngine.process("/WEB-INF/modificaStudente.html", ctx, response.getWriter());
 	}
 
 	/**
