@@ -1,9 +1,10 @@
 (function() {
 	var pageOrchestrator = new PageOrchestrator();
-	var corsiTable, corsiBody, appelliSection, appelliBody;
+	var corsiTable, corsiBody, appelliSection, appelliBody, verbaleSection;
 
 	const URL_DOCENTE_HOME = "DocenteHomePage";
 	const URL_ISCRITTI = "Iscritti";
+
 
 
 	window.addEventListener("load", () => {
@@ -141,19 +142,21 @@
 							// Add actions column
 							let azioniCell = document.createElement("td");
 							// You can add buttons here
-							let modificaButton = document.createElement("button");
-							modificaButton.textContent = "MODIFICA";
-							modificaButton.addEventListener("click", () => {
-								// Nasconde tutte le sezioni attuali
-								document.getElementById("corsiTable").style.display = "none";
-								document.getElementById("corsiSection").style.display = "none";
-								document.getElementById("appelliSection").style.display = "none";
-								document.getElementById("iscrittiSection").style.display = "none";
 
-								// Mostra la sezione di modifica
-								mostraModificaStudente(studente);
-							});
-							azioniCell.appendChild(modificaButton);
+
+							if (!["PUBBLICATO", "RIFIUTATO", "VERBALIZZATO"].includes(studente["statodivalutazione"])) {
+								let modificaButton;
+								modificaButton = document.createElement("button");
+								modificaButton.textContent = "MODIFICA";
+								modificaButton.addEventListener("click", () => {
+									document.getElementById("corsiTable").style.display = "none";
+									document.getElementById("corsiSection").style.display = "none";
+									document.getElementById("appelliSection").style.display = "none";
+									document.getElementById("iscrittiSection").style.display = "none";
+									mostraModificaStudente(studente);
+								});
+								azioniCell.appendChild(modificaButton);
+							}
 							row.appendChild(azioniCell);
 
 							this.iscrittiBody.appendChild(row);
@@ -194,8 +197,8 @@
 							document.getElementById("modStato").textContent = studente.statodivalutazione;
 
 							// Store IDs in hidden fields if needed
-							document.getElementById("modificaStudenteForm").dataset.studenteId = iscritto.id;
-							document.getElementById("modificaStudenteForm").dataset.appId = iscritto.idapp;
+							document.getElementById("modificaStudenteForm").dataset.studenteId = studente.id;
+							document.getElementById("modificaStudenteForm").dataset.appId = studente.idapp;
 
 						} else {
 							document.getElementById("message").textContent = req.responseText;
@@ -209,6 +212,42 @@
 		show();
 
 	}
+
+	function mostraVerbale(verbale, infoverbalizzati) {
+		// Mostra la section verbale e nasconde le altre
+		document.getElementById("corsiSection").style.display = "none";
+		document.getElementById("corsiTable").style.display = "none";
+		document.getElementById("appelliSection").style.display = "none";
+		document.getElementById("iscrittiSection").style.display = "none";
+
+		const verbaleSection = document.getElementById('verbaleSection');
+		verbaleSection.style.display = 'block';
+
+		// Popola dati verbale
+		document.getElementById('verbaleId').textContent = verbale.idverb || '-';
+		document.getElementById('verbaleData').textContent = verbale.data || '-';
+		document.getElementById('verbaleOra').textContent = verbale.ora || '-';
+		document.getElementById('verbaleDataApp').textContent = verbale.dataapp || '-';
+/*
+		// Popola tabella studenti verbalizzati
+		const tbody = document.getElementById('infoverbalizzatiBody');
+		tbody.innerHTML = ''; // svuota la tabella
+		tbody.style.display = 'block';*/
+		document.getElementById('infoverbalizzatiBody');
+		infoverbalizzati.forEach(item => {
+			let row = document.createElement("tr");
+			["matricola", "cognome", "nome", "voto", "statodivalutazione"].forEach(field => {
+				let cell = document.createElement("td");
+				cell.textContent = item[field];
+				row.appendChild(cell);
+			});
+
+			let azioniCell = document.createElement("td");
+		});
+		infoverbalizzati.style.display='block';
+	}
+
+
 
 
 
@@ -231,76 +270,65 @@
 				document.getElementById("iscrittiSection"),
 				document.getElementById("iscrittiBody")
 			);
-			document.getElementById("pubblicaButton").addEventListener("click", () => {
-				if (this.iscritti.currentAppelloId == null) {
-					document.getElementById("message").textContent = "Nessun appello selezionato.";
-					return;
-				}
-				makeCall("POST", "Iscritti?appId=" + this.iscritti.currentAppelloId, null, (req) => {
-					if (req.readyState === XMLHttpRequest.DONE) {
-						if (req.status === 200) {
-							// Dopo il POST, ricarica la lista degli iscritti
-							this.iscritti.show(this.iscritti.currentAppelloId);
-							document.getElementById("message").textContent = "Voti pubblicati con successo.";
-						} else {
-							document.getElementById("message").textContent = req.responseText;
-						}
-					}
-				});
-			});
-			/*
-			document.getElementById("modificaStudenteForm").addEventListener("submit", function(e) {
-				e.preventDefault();
-	
-				const formData = new FormData(this);
-	
-				makeCall("GET", "ModificaStudente", formData, function(req) {
-					if (req.readyState === XMLHttpRequest.DONE) {
-						if (req.status === 200) {
-							document.getElementById("message").textContent = "Modifica effettuata con successo.";
-							document.getElementById("modificaStudenteSection").style.display = "none";
-							pageOrchestrator.iscritti.show(formData.get("appId")); // Ricarica elenco iscritti
-						} else {
-							document.getElementById("message").textContent = req.responseText;
-						}
-					}
-				});
-			});
-			*/
-			document.getElementById("pubblicaButton").addEventListener("click", () => {
-				if (this.iscritti.currentAppelloId == null) {
-					document.getElementById("message").textContent = "Nessun appello selezionato.";
-					return;
-				}
-				makeCall("POST", "Iscritti?appId=" + this.iscritti.currentAppelloId, null, (req) => {
-					if (req.readyState === XMLHttpRequest.DONE) {
-						if (req.status === 200) {
-							// Dopo il POST, ricarica la lista degli iscritti
-							this.iscritti.show(this.iscritti.currentAppelloId);
-							document.getElementById("message").textContent = "Voti pubblicati con successo.";
-						} else {
-							document.getElementById("message").textContent = req.responseText;
-						}
-					}
-				});
-			});
-			document.getElementById("modificaStudenteForm").addEventListener("submit", function(e) {
-				e.preventDefault();
 
-				const studenteId = this.dataset.studenteId;
-				const appId = this.dataset.appId;
+			// Listener bottone VERBALI
+			document.getElementById("verbalizzaButton").addEventListener("click", () => {
+				if (this.iscritti.currentAppelloId == null) {
+					document.getElementById("message").textContent = "Nessun appello selezionato.";
+					return;
+				}
+				// POST per richiedere il verbale
+				makeCall("POST", "PaginaVerbale?appId=" + this.iscritti.currentAppelloId, null, (req) => {
+					if (req.readyState === XMLHttpRequest.DONE) {
+						if (req.status === 200) {
+							// la servlet risponde con verbale e infoverbalizzati in html, quindi dobbiamo modificare la servlet per restituire JSON oppure parse HTML...
+							// Qui assumiamo che la servlet torni JSON (modifica servlet se serve)
+
+							// Se la servlet ritorna JSON, deserializziamo:
+							let response = null;
+							try {
+								response = JSON.parse(req.responseText);
+							} catch (e) {
+								document.getElementById("message").textContent = "Errore parsing verbale JSON.";
+								return;
+							}
+
+							mostraVerbale(response.verbale, response.infoverbalizzati);
+							document.getElementById("message").textContent = "";
+						} else {
+							document.getElementById("message").textContent = req.responseText;
+						}
+					}
+				});
+			});
+
+
+			document.getElementById("pubblicaButton").addEventListener("click", () => {
+				if (this.iscritti.currentAppelloId == null) {
+					document.getElementById("message").textContent = "Nessun appello selezionato.";
+					return;
+				}
+				makeCall("POST", "Iscritti?appId=" + this.iscritti.currentAppelloId, null, (req) => {
+					if (req.readyState === XMLHttpRequest.DONE) {
+						if (req.status === 200) {
+							// Dopo il POST, ricarica la lista degli iscritti
+							this.iscritti.show(this.iscritti.currentAppelloId);
+							document.getElementById("message").textContent = "Voti pubblicati con successo.";
+						} else {
+							document.getElementById("message").textContent = req.responseText;
+						}
+					}
+				});
+			});
+
+			document.getElementById("modificaStudenteForm").addEventListener("submit", function(e) {
+				e.preventDefault();
+				//const form = e.target;
+				const studenteId = parseInt(document.getElementById("modificaStudenteForm").dataset.studenteId, 10);
+				const appId = parseInt(document.getElementById("modificaStudenteForm").dataset.appId, 10);
 				const voto = document.getElementById("modVoto").value;
 
-				const formData = new FormData();
-				formData.append("studenteId", studenteId);
-				formData.append("appId", appId);
-				formData.append("voto", voto);
-
-				if (this.iscritti.currentAppelloId == null) {
-					document.getElementById("message").textContent = "Nessun appello selezionato.";
-					return;
-				}
-				makeCall("POST", "ModificaStudente", formData, (req) => {
+				makeCall("POST", "ModificaStudente?studenteId=" + studenteId + "&appId=" + appId + "&voto=" + voto, null, (req) => {
 					if (req.readyState === XMLHttpRequest.DONE) {
 						if (req.status === 200) {
 							document.getElementById("message").textContent = "Voto modificato con successo.";
@@ -328,4 +356,5 @@
 		};
 	}
 
-})()
+}
+)()

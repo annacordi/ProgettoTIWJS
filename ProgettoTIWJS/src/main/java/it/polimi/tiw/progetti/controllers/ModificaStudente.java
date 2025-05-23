@@ -23,32 +23,36 @@ import it.polimi.tiw.progetti.utils.ConnectionHandler;
 public class ModificaStudente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ModificaStudente() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-    
-    public void init() throws ServletException {
-    	this.connection = ConnectionHandler.getConnection(getServletContext());
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public ModificaStudente() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public void init() throws ServletException {
+		this.connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
 
-    }
-		
-	
+	}
 
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//User user = (User) request.getSession().getAttribute("user");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// User user = (User) request.getSession().getAttribute("user");
 		String studenteIdParam = request.getParameter("studenteId");
 		int studenteid = Integer.parseInt(studenteIdParam);
 		String appelloIdParam = request.getParameter("appId");
 		int appid = Integer.parseInt(appelloIdParam);
 		StudenteDAO studenteDAO = new StudenteDAO(connection, studenteid);
-		
+
+		if (studenteIdParam == null || studenteIdParam.isBlank() || appelloIdParam == null
+				|| appelloIdParam.isBlank()) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("nella doGet di modifica studente uno dei parametri non c'è");
+			return;
+		}
 
 		try {
 			InfoStudenteAppello infostud = studenteDAO.cercoInfoStudentePubblicatoperAppello(appid);
@@ -59,34 +63,41 @@ public class ModificaStudente extends HttpServlet {
 			response.setCharacterEncoding("UTF-8");
 			response.getWriter().write(json);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile recuperare i dati di questo studente per questo appello");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("non riesco a prendere infoStudentepubblicatoperAppello ");
 			return;
 		}
-		
-            
+
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String studenteIdParam = request.getParameter("studenteId");
 		int studenteid = Integer.parseInt(studenteIdParam);
 		String appelloIdParam = request.getParameter("appId");
-		int appid = Integer.parseInt(appelloIdParam);
-		 String voto = request.getParameter("voto");
+		int idapp = Integer.parseInt(appelloIdParam);
+		String voto = request.getParameter("voto");
 		StudenteDAO studenteDAO = new StudenteDAO(connection, studenteid);
-				
 
-		
-		try {
-			studenteDAO.aggiornaVotoEStato(appid, voto);
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile modificare il voto");
+		if (studenteIdParam == null || appelloIdParam == null || voto == null || voto.isBlank()) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("nella doPost di modifica studente uno dei parametri non c'è");
 			return;
 		}
-		
-		response.sendRedirect(getServletContext().getContextPath() + "/Iscritti?appId=" + appid);
+
+		try {
+			studenteDAO.aggiornaVotoEStato(idapp, voto);
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("non riesco ad aggionrare il voto e lo stato");
+			return;
+		}
+
+		response.setStatus(HttpServletResponse.SC_OK);
 
 	}
 

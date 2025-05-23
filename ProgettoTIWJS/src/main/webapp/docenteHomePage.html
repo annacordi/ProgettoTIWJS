@@ -90,9 +90,46 @@
 			<p>
 				<strong>Stato Valutazione:</strong> <span id="modStato"></span>
 			</p>
-			<input id="salvaModificheButton" type="submit" value="SALVA MODIFICHE">
+			<input id="salvaModificheButton" type="submit"
+				value="SALVA MODIFICHE">
 		</form>
 	</section>
+
+	<section id="verbaleSection" style="display: none;">
+		<h1>Dettagli Verbale</h1>
+
+		<p>
+			<strong>Codice verbale:</strong> <span id="verbaleId">-</span>
+		</p>
+
+		<p>
+			<strong>Data verbale:</strong> <span id="verbaleData">-</span>
+		</p>
+
+		<p>
+			<strong>Ora verbale:</strong> <span id="verbaleOra">-</span>
+		</p>
+
+		<p>
+			<strong>Data appello:</strong> <span id="verbaleDataApp">-</span>
+		</p>
+
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Matricola</th>
+					<th>Cognome</th>
+					<th>Nome</th>
+					<th>Voto</th>
+					<th>Stato Valutazione</th>
+				</tr>
+			</thead>
+			<tbody id="infoverbalizzatiBody">
+				<!-- Righe create dinamicamente -->
+			</tbody>
+		</table>
+	</section>
+
 	<div id="message"></div>
 
 
