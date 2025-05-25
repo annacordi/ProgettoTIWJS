@@ -228,11 +228,11 @@
 		document.getElementById('verbaleData').textContent = verbale.data || '-';
 		document.getElementById('verbaleOra').textContent = verbale.ora || '-';
 		document.getElementById('verbaleDataApp').textContent = verbale.dataapp || '-';
-/*
-		// Popola tabella studenti verbalizzati
+
+		
 		const tbody = document.getElementById('infoverbalizzatiBody');
 		tbody.innerHTML = ''; // svuota la tabella
-		tbody.style.display = 'block';*/
+		
 		document.getElementById('infoverbalizzatiBody');
 		infoverbalizzati.forEach(item => {
 			let row = document.createElement("tr");
@@ -242,9 +242,8 @@
 				row.appendChild(cell);
 			});
 
-			let azioniCell = document.createElement("td");
+			tbody.appendChild(row);
 		});
-		infoverbalizzati.style.display='block';
 	}
 
 
