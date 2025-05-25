@@ -106,6 +106,7 @@
 		};
 	}
 
+	/*
 	function Iscritti(iscrittiSection, iscrittiBody) {
 		this.iscrittiSection = iscrittiSection;
 		this.iscrittiBody = iscrittiBody;
@@ -169,7 +170,124 @@
 			});
 		};
 	}
+*/
 
+	function Iscritti(iscrittiSection, iscrittiBody) {
+		this.iscrittiSection = iscrittiSection;
+		this.iscrittiBody = iscrittiBody;
+		this.currentAppelloId = null;
+
+		// Add this:
+		this.iscrittiList = [];  // store all iscritti here
+		this.currentSort = { key: null, ascending: true };  // track current sort state
+
+		this.reset = function() {
+			this.iscrittiSection.style.display = "none";
+			this.iscrittiBody.innerHTML = "";
+			this.currentAppelloId = null;
+			this.iscrittiList = [];
+			this.currentSort = { key: null, ascending: true };
+		};
+
+		this.show = function(appelloId) {
+			this.reset();
+			this.currentAppelloId = appelloId;
+
+			document.getElementById("corsiTable").style.display = "none";
+			document.getElementById("corsiSection").style.display = "none";
+			document.getElementById("appelliSection").style.display = "none";
+
+			let self = this;
+			makeCall("GET", "Iscritti?appId=" + appelloId, null, (req) => {
+				if (req.readyState === XMLHttpRequest.DONE) {
+					if (req.status === 200) {
+						self.iscrittiList = JSON.parse(req.responseText);
+						self.renderTable(self.iscrittiList);
+						self.iscrittiSection.style.display = "block";
+					} else {
+						document.getElementById("message").textContent = req.responseText;
+					}
+				}
+			});
+		};
+
+		// Add this method for rendering the table rows from a list:
+		this.renderTable = function(list) {
+			this.iscrittiBody.innerHTML = "";
+			list.forEach(studente => {
+				let row = document.createElement("tr");
+				["matricola", "cognome", "nome", "email", "corsolaurea", "voto", "statodivalutazione"].forEach(field => {
+					let cell = document.createElement("td");
+					cell.textContent = studente[field];
+					row.appendChild(cell);
+				});
+
+				let azioniCell = document.createElement("td");
+				if (!["PUBBLICATO", "RIFIUTATO", "VERBALIZZATO"].includes(studente["statodivalutazione"])) {
+					let modificaButton = document.createElement("button");
+					modificaButton.textContent = "MODIFICA";
+					modificaButton.addEventListener("click", () => {
+						document.getElementById("corsiTable").style.display = "none";
+						document.getElementById("corsiSection").style.display = "none";
+						document.getElementById("appelliSection").style.display = "none";
+						document.getElementById("iscrittiSection").style.display = "none";
+						mostraModificaStudente(studente);
+					});
+					azioniCell.appendChild(modificaButton);
+				}
+				row.appendChild(azioniCell);
+
+				this.iscrittiBody.appendChild(row);
+			});
+		};
+
+		// Add this method to sort the list and re-render
+		this.sortBy = function(key) {
+			if (this.currentSort.key === key) {
+				this.currentSort.ascending = !this.currentSort.ascending; // toggle order
+			} else {
+				this.currentSort.key = key;
+				this.currentSort.ascending = true; // default ascending
+			}
+
+			const ascending = this.currentSort.ascending;
+
+			this.iscrittiList.sort((a, b) => {
+				let valA = a[key];
+				let valB = b[key];
+
+				// Try to parse as numbers for numeric sort (e.g. voto, matricola)
+				let numA = parseFloat(valA);
+				let numB = parseFloat(valB);
+				if (!isNaN(numA) && !isNaN(numB)) {
+					valA = numA;
+					valB = numB;
+				} else {
+					// For strings, lowercase for case-insensitive comparison
+					if (typeof valA === "string") valA = valA.toLowerCase();
+					if (typeof valB === "string") valB = valB.toLowerCase();
+				}
+
+				if (valA < valB) return ascending ? -1 : 1;
+				if (valA > valB) return ascending ? 1 : -1;
+				return 0;
+			});
+
+			this.renderTable(this.iscrittiList);
+		};
+
+		// Attach event listeners to headers for sorting (call once)
+		this.attachSortHandlers = function() {
+			const headers = this.iscrittiSection.querySelectorAll("thead a[data-order]");
+			headers.forEach(header => {
+				header.addEventListener("click", (e) => {
+					e.preventDefault();
+					const key = header.getAttribute("data-order");
+					this.sortBy(key);
+				});
+			});
+		};
+	}
 
 
 
@@ -178,6 +296,9 @@
 		document.getElementById("message").textContent = "";
 
 		// Mostra solo la sezione di modifica
+		document.getElementById("corsiSection").style.display = "none";
+		document.getElementById("appelliSection").style.display = "none";
+		document.getElementById("iscrittiSection").style.display = "none";
 		document.getElementById("modificaStudenteSection").style.display = "block";
 
 		this.show = function() {
@@ -229,10 +350,10 @@
 		document.getElementById('verbaleOra').textContent = verbale.ora || '-';
 		document.getElementById('verbaleDataApp').textContent = verbale.dataapp || '-';
 
-		
+
 		const tbody = document.getElementById('infoverbalizzatiBody');
 		tbody.innerHTML = ''; // svuota la tabella
-		
+
 		document.getElementById('infoverbalizzatiBody');
 		infoverbalizzati.forEach(item => {
 			let row = document.createElement("tr");
@@ -244,6 +365,47 @@
 
 			tbody.appendChild(row);
 		});
+	}
+
+
+	function mostraElencoVerbali() {
+		// Pulisce eventuali messaggi
+		document.getElementById("corsiSection").style.display = "none";
+		document.getElementById("corsiTable").style.display = "none";
+		document.getElementById("appelliSection").style.display = "none";
+		document.getElementById("iscrittiSection").style.display = "none";
+		document.getElementById("message").textContent = "";
+
+		// Mostra solo la sezione di modifica
+		document.getElementById("elencoVerbaliSection").style.display = "block";
+
+
+
+		this.show = function() {
+			var self = this;
+			makeCall("GET", "ElencoVerbali", null, (req) => {
+				if (req.readyState === XMLHttpRequest.DONE) {
+					if (req.status === 200) {
+						const verbali = JSON.parse(req.responseText);
+						verbali.forEach(verbale => {
+							let row = document.createElement("tr");
+
+							["nomecorso", "dataapp", "dataverb"].forEach(field => {
+								let cell = document.createElement("td");
+								cell.textContent = verbale[field];
+								row.appendChild(cell);
+							});
+
+							this.elencoVerbaliBody.appendChild(row);
+						});
+					} else {
+						document.getElementById("message").textContent = req.responseText;
+					}
+				}
+			});
+		}
+		show();
+
 	}
 
 
@@ -269,6 +431,8 @@
 				document.getElementById("iscrittiSection"),
 				document.getElementById("iscrittiBody")
 			);
+			this.iscritti.attachSortHandlers();
+
 
 			// Listener bottone VERBALI
 			document.getElementById("verbalizzaButton").addEventListener("click", () => {
@@ -301,6 +465,9 @@
 				});
 			});
 
+			document.getElementById("verbaliButton").addEventListener("click", () => {
+				mostraElencoVerbali();
+			})
 
 			document.getElementById("pubblicaButton").addEventListener("click", () => {
 				if (this.iscritti.currentAppelloId == null) {
