@@ -106,7 +106,7 @@
 		this.esitoSection = esitoSection;
 		this.esitoContent = esitoContent;
 		this.rifiutaButton = document.getElementById("rifiutaButton");
-		
+
 		this.currentAppelloId = null;
 		this.currentCorsoId = null;
 
@@ -122,7 +122,7 @@
 			this.reset();
 			this.currentAppelloId = appelloId;
 			this.currentCorsoId = corsoId;
-			
+
 			document.getElementById("corsiSection").style.display = "none";
 			document.getElementById("appelliSection").style.display = "none";
 			makeCall("GET", "Esito?appelloId=" + appelloId + "&corsoId=" + corsoId, null, (req) => {
@@ -130,7 +130,7 @@
 					if (req.status === 200) {
 						const esito = JSON.parse(req.responseText);
 						this.esitoContent.innerHTML = "";
-						
+
 						const pNomeCorso = document.createElement("p");
 						const strongNomeCorso = document.createElement("strong");
 						strongNomeCorso.textContent = "Nome corso: ";
@@ -142,6 +142,36 @@
 						strongData.textContent = "Data appello: ";
 						pData.appendChild(strongData);
 						pData.appendChild(document.createTextNode(esito.data));
+
+						const pMatricola = document.createElement("p");
+						const strongMat = document.createElement("strong");
+						strongMat.textContent = "Matricola: ";
+						pMatricola.appendChild(strongMat);
+						pMatricola.appendChild(document.createTextNode(esito.matricola));
+
+						const pCognome = document.createElement("p");
+						const strongCog = document.createElement("strong");
+						strongCog.textContent = "Cognome: ";
+						pCognome.appendChild(strongCog);
+						pCognome.appendChild(document.createTextNode(esito.cognome));
+
+						const pNome = document.createElement("p");
+						const strongNome = document.createElement("strong");
+						strongNome.textContent = "Nome: ";
+						pNome.appendChild(strongNome);
+						pNome.appendChild(document.createTextNode(esito.nome));
+
+						const pEmail = document.createElement("p");
+						const strongEmail = document.createElement("strong");
+						strongEmail.textContent = "Email: ";
+						pEmail.appendChild(strongEmail);
+						pEmail.appendChild(document.createTextNode(esito.email));
+
+						const pCorsodiLaurea = document.createElement("p");
+						const strongCorsoL = document.createElement("strong");
+						strongCorsoL.textContent = "Corso di laurea: ";
+						pCorsodiLaurea.appendChild(strongCorsoL );
+						pCorsodiLaurea.appendChild(document.createTextNode(esito.corsolaurea));
 
 						const pVoto = document.createElement("p");
 						const strongVoto = document.createElement("strong");
@@ -158,19 +188,24 @@
 						// Appendo tutti i paragrafi al contenuto
 						this.esitoContent.appendChild(pNomeCorso);
 						this.esitoContent.appendChild(pData);
+						this.esitoContent.appendChild(pMatricola);
+						this.esitoContent.appendChild(pCognome);
+						this.esitoContent.appendChild(pNome);
+						this.esitoContent.appendChild(pEmail);
+						this.esitoContent.appendChild(pCorsodiLaurea);
 						this.esitoContent.appendChild(pVoto);
 						this.esitoContent.appendChild(pStato);
-						
+
 						if (esito.voto != null && esito.statodivalutazione != "RIFIUTATO") {
-						    this.rifiutaButton.style.display = "inline-block";
-						    this.rifiutaButton.disabled = false;
+							this.rifiutaButton.style.display = "inline-block";
+							this.rifiutaButton.disabled = false;
 						} else {
-						    this.rifiutaButton.style.display = "none";
+							this.rifiutaButton.style.display = "none";
 							const msg = document.createElement("p");
 							msg.textContent = "Il voto è stato rifiutato";
 							this.esitoContent.appendChild(msg);
 						}
-						
+
 						this.esitoSection.style.display = "block";
 					} else {
 						document.getElementById("message").textContent = req.responseText;
@@ -178,30 +213,30 @@
 				}
 			});
 		};
-		
+
 		this.rifiutaButton.addEventListener("click", () => {
-		    if (!this.currentAppelloId || !this.currentCorsoId) return;
+			if (!this.currentAppelloId || !this.currentCorsoId) return;
 
-		    this.rifiutaButton.disabled = true; // previeni doppio click
+			this.rifiutaButton.disabled = true; // previeni doppio click
 
-		    // Costruisci i parametri da inviare
+			// Costruisci i parametri da inviare
 
 
-		    makeCall("POST", "Esito?appelloId=" + this.currentAppelloId + "&corsoId=" + this.currentCorsoId,null, (req) => {
-		        if (req.readyState === XMLHttpRequest.DONE) {
-		            if (req.status === 200) {
+			makeCall("POST", "Esito?appelloId=" + this.currentAppelloId + "&corsoId=" + this.currentCorsoId, null, (req) => {
+				if (req.readyState === XMLHttpRequest.DONE) {
+					if (req.status === 200) {
 						pageOrchestrator.esito.show(this.currentAppelloId, this.currentCorsoId);
-		                // Nascondi bottone e mostra messaggio
-		                this.rifiutaButton.style.display = "none";
-		                const msg = document.createElement("p");
-		                msg.textContent = "Il voto è stato rifiutato";
-		                this.esitoContent.appendChild(msg);
-		            } else {
-		                document.getElementById("message").textContent = "Errore nel rifiuto del voto: " + req.responseText;
-		                this.rifiutaButton.disabled = false;
-		            }
-		        }
-		    });
+						// Nascondi bottone e mostra messaggio
+						this.rifiutaButton.style.display = "none";
+						const msg = document.createElement("p");
+						msg.textContent = "Il voto è stato rifiutato";
+						this.esitoContent.appendChild(msg);
+					} else {
+						document.getElementById("message").textContent = "Errore nel rifiuto del voto: " + req.responseText;
+						this.rifiutaButton.disabled = false;
+					}
+				}
+			});
 		});
 	}
 
