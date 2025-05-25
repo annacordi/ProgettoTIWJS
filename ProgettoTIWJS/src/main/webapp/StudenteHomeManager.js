@@ -106,6 +106,8 @@
 		this.esitoSection = esitoSection;
 		this.esitoContent = esitoContent;
 		this.rifiutaButton = document.getElementById("rifiutaButton");
+		this.trashcan = document.getElementById("trashcan");
+
 
 		this.currentAppelloId = null;
 		this.currentCorsoId = null;
@@ -116,6 +118,8 @@
 			this.rifiutaButton.style.display = "none";
 			this.currentAppelloId = null;
 			this.currentCorsoId = null;
+			this.trashcan.style.display = "none";
+
 		};
 
 		this.show = function(appelloId, corsoId) {
@@ -199,8 +203,11 @@
 						if (esito.voto != null && esito.statodivalutazione != "RIFIUTATO") {
 							this.rifiutaButton.style.display = "inline-block";
 							this.rifiutaButton.disabled = false;
+							this.trashcan.style.display = "inline-block";
 						} else {
 							this.rifiutaButton.style.display = "none";
+							this.trashcan.style.display = "none";
+
 							const msg = document.createElement("p");
 							msg.textContent = "Il voto è stato rifiutato";
 							this.esitoContent.appendChild(msg);
@@ -214,6 +221,36 @@
 			});
 		};
 
+		// Drag & Drop implementation
+		    // 1. Set dataTransfer on dragstart
+		    this.esitoContent.addEventListener("dragstart", (ev) => {
+		        ev.dataTransfer.setData("text/plain", "esitoContentDragged");
+		        // You can style the dragging element if you want
+		    });
+
+		    // 2. Allow drop on trashcan
+		    this.trashcan.addEventListener("dragover", (ev) => {
+		        ev.preventDefault(); // allow drop
+		        this.trashcan.style.filter = "brightness(0.8)"; // optional highlight effect
+		    });
+
+		    this.trashcan.addEventListener("dragleave", (ev) => {
+		        this.trashcan.style.filter = "none"; // remove highlight effect
+		    });
+
+		    // 3. On drop, trigger rifiutaButton click logic
+		    this.trashcan.addEventListener("drop", (ev) => {
+		        ev.preventDefault();
+		        this.trashcan.style.filter = "none";
+
+		        // You could also check ev.dataTransfer.getData to confirm
+		        const data = ev.dataTransfer.getData("text/plain");
+		        if (data === "esitoContentDragged") {
+		            // Trigger the rifiuta action programmatically
+		            document.getElementById("confirmModal").style.display = "flex";
+		        }
+		    });
+		
 		this.rifiutaButton.addEventListener("click", () => {
 			if (!this.currentAppelloId || !this.currentCorsoId) return;
 
@@ -237,7 +274,21 @@
 					}
 				}
 			});
+			document.getElementById("confirmModal").style.display = "none";
 		});
+		
+		/*
+		// Modal buttons
+		document.getElementById("confirmRifiuta").addEventListener("click", () => {
+			document.getElementById("confirmModal").style.display = "none";
+			this.rifiutaButton.click(); // trigger the existing logic
+		});
+		*/
+
+		document.getElementById("cancelModal").addEventListener("click", () => {
+			document.getElementById("confirmModal").style.display = "none";
+		});
+
 	}
 
 	function PageOrchestrator() {
