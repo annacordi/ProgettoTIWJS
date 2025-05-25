@@ -1,35 +1,54 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Studente Home Page</title>
-  <script src="utils.js" charset="utf-8" defer></script>
-<script src="LoginPageManager.js" charset="utf-8" defer></script>
+<meta charset="UTF-8">
+<title>Studente Dashboard</title>
+<script src="utils.js" defer></script>
+<script src="LoginPageManager.js" defer></script>
+<script src="StudenteHomeManager.js" defer></script>
 </head>
 <body>
-  <h1>Benvenuto Studente</h1>
+	<!-- CORSI -->
+	<section id="corsiSection">
+		<h1>Studente Home Page</h1>
+		<p>
+			Benvenuto, <strong id="username">Nome Studente</strong>!
+		</p>
 
-  <!-- Vista Corsi -->
-  <div id="view-corsi" class="view visible">
-    <h2>Lista Corsi</h2>
-    <ul id="listaCorsi"></ul>
-  </div>
+		<h2>Lista Corsi</h2>
+		<table id="corsiTable">
+			<tbody id="corsiBody">
 
-  <!-- Vista Appelli -->
-  <div id="view-appelli" class="view">
-    <h2>Appelli per il corso: <span id="nomeCorso"></span></h2>
-    <ul id="listaAppelli"></ul>
-    <button onclick="tornaACorsi()">Indietro</button>
-  </div>
+			</tbody>
+		</table>
+	</section>
 
-  <!-- Vista Esito -->
-  <div id="view-esito" class="view">
-    <h2>Esito dell'appello</h2>
-    <div id="esitoContainer"></div>
-    <div id="cestino" ondragover="allowDrop(event)" ondrop="confermaRifiuto(event)">🗑️ Cestino</div>
-    <button onclick="tornaAAppelli()">Indietro</button>
-  </div>
 
- 
+	<section id="appelliSection" style="display: none;">
+		<!-- APPELLI -->
+		<h2>Appelli del Corso</h2>
+		<table id="appelliTable">
+			<thead>
+				<tr>
+					<th>Data Appello</th>
+				</tr>
+			</thead>
+			<tbody id="appelliBody">
+				<!-- Populated by JS -->
+			</tbody>
+		</table>
+		
+	</section>
+
+	<section id="esitoSection" style="display: none;">
+		<h2>Esito Appello</h2>
+		<div id="esitoContent">
+			<!-- Popolato via JS -->
+		</div>
+		<button id="rifiutaButton">RIFIUTA</button>
+	</section>
+
+	<div id="message"></div>
+
 </body>
 </html>

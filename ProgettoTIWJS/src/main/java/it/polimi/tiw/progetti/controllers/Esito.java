@@ -9,15 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
-import org.thymeleaf.web.IWebExchange;
-import org.thymeleaf.web.servlet.JakartaServletWebApplication;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.progetti.beans.InfoIscritti;
 import it.polimi.tiw.progetti.beans.InfoStudenteAppello;
@@ -33,7 +27,6 @@ import it.polimi.tiw.progetti.utils.ConnectionHandler;
 public class Esito extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -47,13 +40,6 @@ public class Esito extends HttpServlet {
     	this.connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
 
-		  JakartaServletWebApplication webApplication = JakartaServletWebApplication.buildApplication(servletContext);    
-		  WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(webApplication);
-
-		  templateResolver.setTemplateMode(TemplateMode.HTML);
-		  this.templateEngine = new TemplateEngine();
-		  this.templateEngine.setTemplateResolver(templateResolver);
-		  templateResolver.setSuffix(".html");
     }
 		
 	
@@ -64,26 +50,26 @@ public class Esito extends HttpServlet {
 		String appelloIdParam = request.getParameter("appelloId");
 		int appelloId = Integer.parseInt(appelloIdParam);
 		String corsoIdParam = request.getParameter("corsoId");
-		int corsoId = Integer.parseInt(appelloIdParam);
+		int corsoId = Integer.parseInt(corsoIdParam);
 		StudenteDAO studenteDAO = new StudenteDAO(connection,user.getId());
-		
-		JakartaServletWebApplication application = JakartaServletWebApplication.buildApplication(getServletContext());
-		IWebExchange webExchange = application.buildExchange(request, response);
-		WebContext ctx = new WebContext(webExchange, request.getLocale());
 
+		InfoStudenteAppello infostud = null;
 		try {
-			InfoStudenteAppello infostud = studenteDAO.cercoInfoStudentePubblicatoperAppello(appelloId);
-			ctx.setVariable("infostud", infostud);
+			infostud = studenteDAO.cercoInfoStudentePubblicatoperAppello(appelloId);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile recuperare l'esito per questo appello");
 		    return;
 		}
+		
+		Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(infostud);
 
-		
-	
-		
-		
-	    templateEngine.process("/WEB-INF/esito.html", ctx, response.getWriter());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(json);
+
+
 	}
 
 	/**
@@ -94,7 +80,7 @@ public class Esito extends HttpServlet {
 		String appelloIdParam = request.getParameter("appelloId");
 		int appelloId = Integer.parseInt(appelloIdParam);
 		String corsoIdParam = request.getParameter("corsoId");
-		int corsoId = Integer.parseInt(appelloIdParam);
+		int corsoId = Integer.parseInt(corsoIdParam);
 		StudenteDAO studenteDAO = new StudenteDAO(connection,user.getId());
 		
 		
