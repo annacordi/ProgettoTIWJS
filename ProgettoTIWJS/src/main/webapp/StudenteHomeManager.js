@@ -11,6 +11,11 @@
 		}
 		document.getElementById("username").textContent = sessionStorage.getItem("username");
 		document.getElementById("role").textContent = sessionStorage.getItem("role");
+		document.getElementById("logoutBtn").addEventListener("click", () => {
+				sessionStorage.clear(); 
+				window.location.href = "loginPage.html";
+			});
+		
 
 	}, false)
 
