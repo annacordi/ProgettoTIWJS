@@ -1,0 +1,61 @@
+@charset "UTF-8";
+/* Sfondo generale */
+body {
+  background-color: #e8f5e9; /* verde chiaro */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 40px;
+  color: #333;
+}
+
+/* Titoli */
+h1, h2, h3 {
+  color: #2e7d32; /* verde intenso */
+}
+
+/* Form stile */
+fieldset {
+  border: none;
+  padding: 0;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 25%;
+  padding: 8px;
+  margin: 8px 0 16px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="submit"] {
+  background-color: #2e7d32; /* verde intenso */
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button {
+  background-color: #2e7d32; /* verde intenso */
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  margin: 4px; 
+}
+
+button:hover {
+  background-color: #1b5e20; /* verde ancora più scuro */
+}
+
+input[type="submit"]:hover {
+  background-color: #1b5e20;
+}
+
+#error_message {
+  color: red;
+  margin-top: 10px;
+}
