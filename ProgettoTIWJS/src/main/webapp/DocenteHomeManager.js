@@ -15,6 +15,8 @@
 			pageOrchestrator.refresh()
 		}
 		document.getElementById("username").textContent = sessionStorage.getItem("username");
+		document.getElementById("role").textContent = sessionStorage.getItem("role");
+
 
 	}, false)
 
@@ -106,71 +108,6 @@
 		};
 	}
 
-	/*
-	function Iscritti(iscrittiSection, iscrittiBody) {
-		this.iscrittiSection = iscrittiSection;
-		this.iscrittiBody = iscrittiBody;
-		this.currentAppelloId = null;
-
-
-		this.reset = function() {
-			this.iscrittiSection.style.display = "none";
-			this.iscrittiBody.innerHTML = "";
-			this.currentAppelloId = null;
-		};
-
-		this.show = function(appelloId) {
-			this.reset();
-			this.currentAppelloId = appelloId;
-
-			document.getElementById("corsiTable").style.display = "none";
-			document.getElementById("corsiSection").style.display = "none";
-			document.getElementById("appelliSection").style.display = "none";
-
-			makeCall("GET", "Iscritti?appId=" + appelloId, null, (req) => {
-				if (req.readyState === XMLHttpRequest.DONE) {
-					if (req.status === 200) {
-						let iscritti = JSON.parse(req.responseText);
-						iscritti.forEach(studente => {
-							let row = document.createElement("tr");
-
-							["matricola", "cognome", "nome", "email", "corsolaurea", "voto", "statodivalutazione"].forEach(field => {
-								let cell = document.createElement("td");
-								cell.textContent = studente[field];
-								row.appendChild(cell);
-							});
-
-							// Add actions column
-							let azioniCell = document.createElement("td");
-							// You can add buttons here
-
-
-							if (!["PUBBLICATO", "RIFIUTATO", "VERBALIZZATO"].includes(studente["statodivalutazione"])) {
-								let modificaButton;
-								modificaButton = document.createElement("button");
-								modificaButton.textContent = "MODIFICA";
-								modificaButton.addEventListener("click", () => {
-									document.getElementById("corsiTable").style.display = "none";
-									document.getElementById("corsiSection").style.display = "none";
-									document.getElementById("appelliSection").style.display = "none";
-									document.getElementById("iscrittiSection").style.display = "none";
-									mostraModificaStudente(studente);
-								});
-								azioniCell.appendChild(modificaButton);
-							}
-							row.appendChild(azioniCell);
-
-							this.iscrittiBody.appendChild(row);
-						});
-						this.iscrittiSection.style.display = "block";
-					} else {
-						document.getElementById("message").textContent = req.responseText;
-					}
-				}
-			});
-		};
-	}
-*/
 
 	function Iscritti(iscrittiSection, iscrittiBody) {
 		this.iscrittiSection = iscrittiSection;
@@ -287,7 +224,41 @@
 				});
 			});
 		};
+
+		this.showInserimentoMultiplo = function() {
+			const modal = document.getElementById("inserimentoMultiploModal");
+			const tbody = document.getElementById("inserimentoMultiploBody");
+			tbody.innerHTML = "";
+
+			// Filtra iscritti non ancora inseriti
+			const nonInseriti = this.iscrittiList.filter(s => s.statodivalutazione === "NON_INSERITO");
+
+			if (nonInseriti.length === 0) {
+				tbody.innerHTML = "<tr><td colspan='4'>Nessuno studente nello stato NON_INSERITO</td></tr>";
+			} else {
+				nonInseriti.forEach(studente => {
+					let row = document.createElement("tr");
+					row.setAttribute("data-studente-id", studente.id); // 👈 store studente.id
+					row.innerHTML = `
+					        <td>${studente.matricola}</td>
+					        <td>${studente.nome}</td>
+					        <td>${studente.cognome}</td>
+							<td>${studente.email}</td>
+							<td>${studente.corsolaurea}</td>
+							<td><input type="text" name="voto"></td>
+					      `;
+					tbody.appendChild(row);
+				});
+			}
+
+
+
+			modal.style.display = "flex";
+			document.body.style.overflow = "hidden";
+		};
+
 	}
+
 
 
 
@@ -410,11 +381,6 @@
 
 
 
-
-
-
-
-
 	function PageOrchestrator() {
 		this.corsi = null;
 		this.appelli = null;
@@ -487,6 +453,40 @@
 				});
 			});
 
+			document.getElementById("inserimentoMultiploBtn").addEventListener("click", () => {
+				this.iscritti.showInserimentoMultiplo();
+			});
+
+			document.getElementById("closeInserimentoModal").addEventListener("click", () => {
+				document.getElementById("inserimentoMultiploModal").style.display = "none";
+			});
+			/*
+						document.addEventListener("DOMContentLoaded", function() {
+							const inserimentoBtn = document.getElementById("inserimentoMultiploBtn");
+							const modal = document.getElementById("inserimentoMultiploModal");
+							const closeBtn = document.getElementById("closeInserimentoModal");
+			
+							inserimentoBtn.addEventListener("click", function() {
+								modal.style.display = "flex";
+								document.body.style.overflow = "hidden"; // blocca lo scroll sotto
+							});
+			
+							closeBtn.addEventListener("click", function() {
+								modal.style.display = "none";
+								document.body.style.overflow = "auto"; // riattiva lo scroll
+							});
+			
+							// Chiudi modale se clicchi fuori
+							window.addEventListener("click", function(event) {
+								if (event.target === modal) {
+									modal.style.display = "none";
+									document.body.style.overflow = "auto";
+								}
+							});
+						});
+						*/
+
+
 			document.getElementById("modificaStudenteForm").addEventListener("submit", function(e) {
 				e.preventDefault();
 				//const form = e.target;
@@ -508,6 +508,51 @@
 					}
 				});
 			});
+
+
+			document.getElementById("inserimentoMultiploForm").addEventListener("submit", function(event) {
+				event.preventDefault();
+
+				const appId = pageOrchestrator.iscritti.currentAppelloId; // get current appId
+				const rows = document.querySelectorAll("#inserimentoMultiploBody tr");
+
+				// Create an array of promises for all the POST calls
+				const requests = Array.from(rows).map(row => {
+					const studenteId = row.getAttribute("data-studente-id");
+					const votoInput = row.querySelector("input[name='voto']");
+					const voto = votoInput.value.trim();
+
+					if (voto !== "") {
+						return new Promise((resolve, reject) => {
+							makeCall("POST", `ModificaStudente?studenteId=${studenteId}&appId=${appId}&voto=${voto}`, null, (req) => {
+								if (req.readyState === XMLHttpRequest.DONE) {
+									if (req.status === 200) {
+										console.log(`Voto inserito per studente ${studenteId}`);
+										resolve();
+									} else {
+										console.error(`Errore per studente ${studenteId}: ${req.status}`);
+										reject(req.status);
+									}
+								}
+							});
+						});
+					} else {
+						return Promise.resolve(); // Skip empty rows
+					}
+				});
+
+				// Wait for all requests to complete before updating
+				Promise.all(requests).then(() => {
+					pageOrchestrator.iscritti.show(appId); // Refresh iscritti after all votes are inserted
+					document.getElementById("inserimentoMultiploModal").style.display = "none";
+					document.body.style.overflow = "auto";
+				}).catch(error => {
+					console.error("Errore durante l'inserimento dei voti:", error);
+				});
+			});
+
+
+
 
 
 

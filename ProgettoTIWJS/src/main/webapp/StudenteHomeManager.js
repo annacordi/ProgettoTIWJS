@@ -10,13 +10,14 @@
 			pageOrchestrator.refresh()
 		}
 		document.getElementById("username").textContent = sessionStorage.getItem("username");
+		document.getElementById("role").textContent = sessionStorage.getItem("role");
 
 	}, false)
 
 	function Corsi(_corsiTable, _corsiBody) {
 		this.corsiTable = _corsiTable;
 		this.corsiBody = _corsiBody;
-		this.messageContainer = document.getElementById("message"); // ← AGGIUNGI QUESTO
+		this.messageContainer = document.getElementById("message");
 
 
 		this.reset = function() {

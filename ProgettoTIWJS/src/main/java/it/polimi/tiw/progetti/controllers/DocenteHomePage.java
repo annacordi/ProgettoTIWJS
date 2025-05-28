@@ -6,6 +6,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,6 +44,13 @@ public class DocenteHomePage extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user = (User) request.getSession().getAttribute("user");
+		/*
+		HttpSession session = request.getSession(false);
+		if (session == null || !"docente".equals(session.getAttribute("role"))) {
+		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		    return;
+		}
+		*/
 
 		String corsoIdParam = request.getParameter("corsoId");
 	    Gson gson = new GsonBuilder().create();

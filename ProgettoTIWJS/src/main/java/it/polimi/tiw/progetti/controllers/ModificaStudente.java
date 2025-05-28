@@ -91,6 +91,7 @@ public class ModificaStudente extends HttpServlet {
 
 		try {
 			studenteDAO.aggiornaVotoEStato(idapp, voto);
+			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("non riesco ad aggionrare il voto e lo stato");
