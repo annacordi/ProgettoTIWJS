@@ -25,12 +25,12 @@
 		<filter-class>it.polimi.tiw.progetti.filters.Checker</filter-class>
 	</filter>
 	<filter>
-		<filter-name>DocenteChecker</filter-name>
-		<filter-class>it.polimi.tiw.progetti.filters.DocenteChecker</filter-class>
+		<filter-name>DocenteCheck</filter-name>
+		<filter-class>it.polimi.tiw.progetti.filters.DocenteCheck</filter-class>
 	</filter>
 	<filter>
-		<filter-name>StudenteChecker</filter-name>
-		<filter-class>it.polimi.tiw.progetti.filters.StudenteChecker</filter-class>
+		<filter-name>StudenteCheck</filter-name>
+		<filter-class>it.polimi.tiw.progetti.filters.StudenteCheck</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>Checker</filter-name>
@@ -43,7 +43,7 @@
 		<url-pattern>/StudenteHomePage</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-		<filter-name>DocenteChecker</filter-name>
+		<filter-name>DocenteCheck</filter-name>
 		<url-pattern>/DocenteHomePage</url-pattern>
 		<url-pattern>/ElencoVerbali</url-pattern>
 		<url-pattern>/Iscritti</url-pattern>
@@ -51,10 +51,11 @@
 		<url-pattern>/PaginaVerbale</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-		<filter-name>StudenteChecker</filter-name>
+		<filter-name>StudenteCheck</filter-name>
 		<url-pattern>/Esito</url-pattern>
 		<url-pattern>/StudenteHomePage</url-pattern>
 	</filter-mapping>
+
 	<welcome-file-list>
 		<welcome-file>loginPage.html</welcome-file>
 	</welcome-file-list>

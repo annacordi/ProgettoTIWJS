@@ -6,7 +6,6 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,14 +16,14 @@ import java.io.IOException;
 import it.polimi.tiw.progetti.beans.User;
 
 /**
- * Servlet Filter implementation class StudenteChecker
+ * Servlet Filter implementation class DocenteChecker
  */
-public class StudenteChecker extends HttpFilter implements Filter {
+public class DocenteCheck extends HttpFilter implements Filter {
        
     /**
      * @see HttpFilter#HttpFilter()
      */
-    public StudenteChecker() {
+    public DocenteCheck() {
         // TODO Auto-generated constructor stub
     }
 
@@ -39,33 +38,31 @@ public class StudenteChecker extends HttpFilter implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		// place your code here
 
-		System.out.print("Studente filter executing \n");
+		System.out.print("Docente filter executing ..\n");
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		String loginpath = req.getServletContext().getContextPath() + "/CheckLogin";
+		String loginpath = req.getServletContext().getContextPath() + "/loginPage.html";
+
 		HttpSession s = req.getSession();
-	    if (s == null) {
-	        res.sendRedirect(loginpath);
-	        return;
-	    }
+		
 		User u = null;
-        // check if the client is a worker
+		
 		u = (User) s.getAttribute("user");
 		if(u==null) {
-			System.out.print("StudenteUser è vuoto\n");
+			System.out.print("Docente user è vuoto\n");
+			res.sendRedirect(loginpath);
+			return;
 		
 		}
 		System.out.print("Il ruolo è \n" + u.getRole());
-		if (!u.getRole().equals("studente")) {
-			System.out.print("Sono nell'if");
-			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			res.setHeader("Location",loginpath);
-		    res.sendRedirect(loginpath);
+		if (!u.getRole().equals("docente")) {
+			res.sendRedirect(loginpath);
 
 			return;
 		}
-
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}
@@ -74,7 +71,7 @@ public class StudenteChecker extends HttpFilter implements Filter {
 	 * @see Filter#init(FilterConfig)
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 	}
 
 }

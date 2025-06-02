@@ -30,9 +30,9 @@
 							}
                             
                         }else if(req.status == 401){//incorrect credentials
-                            document.getElementById("error_message").textContent = message;
+                            document.getElementById("error_message").textContent = req.responseText;
                         }else{
-                            document.getElementById("error_message").textContent = message;
+                            document.getElementById("error_message").textContent = req.responseText;
                         }
                     }
                 });

@@ -32,9 +32,8 @@ public class CheckLogin extends HttpServlet {
 
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) // TODO qui è una get
-			throws ServletException, IOException {
-		// obtain and escape params
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  {
 		String usrn = null;
 		String pwd = null;
 		usrn = request.getParameter("username");
@@ -70,7 +69,6 @@ public class CheckLogin extends HttpServlet {
 			    String json = String.format("{\"username\": \"%s\", \"role\": \"%s\"}", user.getUsername(), user.getRole());
 			    response.getWriter().println(json);
 		}
-
 	}
 
 	public void destroy() {

@@ -6,7 +6,6 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,11 +45,17 @@ public class Checker extends HttpFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/loginPage.html";
+		String path = req.getRequestURI();
+
+		if (path.endsWith("loginPage.html") || path.endsWith("CheckLogin")) {
+		    chain.doFilter(request, response); // lasciali passare
+		    return;
+		}
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
-			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			res.setHeader("Location",loginpath);
+			System.out.print("user is null");
+			res.sendRedirect(loginpath);
 			return;
 		}
 		// pass the request along the filter chain
@@ -62,7 +67,7 @@ public class Checker extends HttpFilter implements Filter {
 	 * @see Filter#init(FilterConfig)
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 	}
 
 }

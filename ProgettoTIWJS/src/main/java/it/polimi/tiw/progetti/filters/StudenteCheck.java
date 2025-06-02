@@ -17,14 +17,14 @@ import java.io.IOException;
 import it.polimi.tiw.progetti.beans.User;
 
 /**
- * Servlet Filter implementation class DocenteChecker
+ * Servlet Filter implementation class StudenteChecker
  */
-public class DocenteChecker extends HttpFilter implements Filter {
+public class StudenteCheck extends HttpFilter implements Filter {
        
     /**
      * @see HttpFilter#HttpFilter()
      */
-    public DocenteChecker() {
+    public StudenteCheck() {
         // TODO Auto-generated constructor stub
     }
 
@@ -39,30 +39,33 @@ public class DocenteChecker extends HttpFilter implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		// place your code here
 
-		System.out.print("Docente filter executing ..\n");
+		System.out.print("Studente filter executing \n");
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/loginPage.html";
-		// check if the client is an admin
+
 		HttpSession s = req.getSession();
+	    if (s == null) {
+	        res.sendRedirect(loginpath);
+	        return;
+	    }
 		User u = null;
-		
+        // check if the client is a worker
 		u = (User) s.getAttribute("user");
 		if(u==null) {
-			System.out.print("Docente user è vuoto\n");
+			System.out.print("StudenteUser è vuoto\n");
 		
 		}
 		System.out.print("Il ruolo è \n" + u.getRole());
-		if (!u.getRole().equals("docente")) {
-			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			res.setHeader("Location",loginpath);
+		if (!u.getRole().equals("studente")) {
+			System.out.print("Sono nell'if");
+
 		    res.sendRedirect(loginpath);
 
 			return;
 		}
+
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}
@@ -71,7 +74,7 @@ public class DocenteChecker extends HttpFilter implements Filter {
 	 * @see Filter#init(FilterConfig)
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 	}
 
 }
