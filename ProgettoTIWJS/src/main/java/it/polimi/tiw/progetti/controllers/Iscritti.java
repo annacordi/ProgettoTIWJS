@@ -46,7 +46,8 @@ public class Iscritti extends HttpServlet {
 
 		String orderBy = request.getParameter("orderBy");
 		String orderDirection = request.getParameter("orderDirection");
-
+		
+		//parametri utilizzati per il riordino degli elementi nelle colonne della tabella iscritti
 		if (orderDirection != null && orderDirection.equalsIgnoreCase("ASC")) {
 			orderDirection = "ASC";
 		} else {
@@ -57,7 +58,7 @@ public class Iscritti extends HttpServlet {
 
 
 		try {
-
+			//carico gli iscritti all'appello
 			List<InfoIscritti> iscritti = appelloDAO.cercaAppelli(orderBy, orderDirection);
 			Gson gson = new Gson();
 		    String json = gson.toJson(iscritti);
@@ -77,7 +78,7 @@ public class Iscritti extends HttpServlet {
 		String appelloIdParam = request.getParameter("appId");
 		int appId = Integer.parseInt(appelloIdParam);
 		AppelloDAO appelloDAO = new AppelloDAO(connection, appId);
-
+		//aggiorna nel database lo stato di valutazione a pubblicato per tutti gli inseriti
 		try {
 			appelloDAO.aggiornaPubblicati();
 		} catch (SQLException e) {

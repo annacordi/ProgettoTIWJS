@@ -37,18 +37,15 @@ public class Checker implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		// place your code here
 		System.out.print("Login checker filter executing ...\n");
 
 		// java.lang.String loginpath = "/index.html";
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/loginPage.html";
-		//String path = req.getRequestURI();
 
 		/*if (path.endsWith("loginPage.html") || path.endsWith("CheckLogin")) {
-		    chain.doFilter(request, response); // lasciali passare
+		    chain.doFilter(request, response); 
 		    return;
 		}*/
 
@@ -58,7 +55,6 @@ public class Checker implements Filter {
 			res.sendRedirect(loginpath);
 			return;
 		}
-		// pass the request along the filter chain
 		chain.doFilter(request, response);
 
 	}

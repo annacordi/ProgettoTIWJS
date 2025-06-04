@@ -24,91 +24,90 @@ import it.polimi.tiw.progetti.dao.VerbaleDAO;
 import it.polimi.tiw.progetti.utils.ConnectionHandler;
 import it.polimi.tiw.progetti.utils.LocalTimeAdapter;
 
-
 @WebServlet("/PaginaVerbale")
 public class PaginaVerbale extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	
 
-    public PaginaVerbale() {
-        super();
-    }
-    
+	public PaginaVerbale() {
+		super();
+	}
 
-    public void init() throws ServletException {
-    	this.connection = ConnectionHandler.getConnection(getServletContext());
+	public void init() throws ServletException {
+		this.connection = ConnectionHandler.getConnection(getServletContext());
 		ServletContext servletContext = getServletContext();
-
-    }
-
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 
 	}
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String appelloIdParam = request.getParameter("appId");
 		int appid = Integer.parseInt(appelloIdParam);
 		VerbaleDAO verbaleDAO = new VerbaleDAO(connection, appid);
-		
+
 		List<Integer> studentidaAggiornare;
 		Map<String, Object> result = new HashMap<>();
-		 try {
-		        studentidaAggiornare = verbaleDAO.cercaIdStudentiPubbORif();
-		    } catch (SQLException e) {
-		        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore nel cercare gli ID degli studenti da aggiornare.");
-		        return;
-		    }
+		// lista formata dagli id degli studenti che hanno lo stato di valutazione a
+		// pubblicato o rifiutato
+		try {
+			studentidaAggiornare = verbaleDAO.cercaIdStudentiPubbORif();
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Errore nel cercare gli ID degli studenti da aggiornare.");
+			return;
+		}
+		// aggiorno nel DB lo stato degli studenti con stato di valutazione a pubblicato
+		// o rifiutato a verbalizzato
+		//aggiorno voto a rimandato se lo stato di valutazione è rifiutato
+		try {
+			verbaleDAO.aggiornaverbalizzato();
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Errore durante l'aggiornamento dei dati come verbalizzati.");
+			return;
+		}
 
-		    try {
-		        verbaleDAO.aggiornaverbalizzato();
-		    } catch (SQLException e) {
-		        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore durante l'aggiornamento dei dati come verbalizzati.");
-		        return;
-		    }
-		    
-		    List<InfoIscritti> studentiaggiornati = new ArrayList<InfoIscritti>();
+		List<InfoIscritti> studentiaggiornati = new ArrayList<InfoIscritti>();
+		//carico informazioni complete degli studenti di cui avevo preso l'id
+		try {
+			studentiaggiornati = verbaleDAO.infoStudentiAggiornati(appid, studentidaAggiornare);
+			result.put("infoverbalizzati", studentiaggiornati);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Errore nel recuperare le informazioni degli studenti aggiornati.");
+			return;
+		}
+		//creo il verbale
+		try {
+			verbaleDAO.creaverbale();
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore nella creazione del verbale.");
+			return;
+		}
+		Verbale verbale = new Verbale();
+		//carica informazioni dell'ultimo verbale creato
+		try {
 
-		    try {
-		    	studentiaggiornati = verbaleDAO.infoStudentiAggiornati(appid, studentidaAggiornare);
-		    	result.put("infoverbalizzati", studentiaggiornati);
-		    } catch (SQLException e) {
-		        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore nel recuperare le informazioni degli studenti aggiornati.");
-		        return;
-		    }
+			verbale = verbaleDAO.idVerb();
+			result.put("verbale", verbale);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Errore nel recuperare il verbale creato.");
+			return;
+		}
+		Gson gson = new GsonBuilder().registerTypeAdapter(LocalTime.class, new LocalTimeAdapter()).create();
 
-		    try {
-		        verbaleDAO.creaverbale();
-		    } catch (SQLException e) {
-		        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore nella creazione del verbale.");
-		        return;
-		    }
-		    Verbale verbale = new Verbale();
+		String json = gson.toJson(result);
 
-		    try {
-		    
-		    	verbale = verbaleDAO.idVerb();
-		    	result.put("verbale", verbale);
-		    } catch (SQLException e) {
-		        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore nel recuperare il verbale creato.");
-		        return;
-		    }
-		    Gson gson = new GsonBuilder()
-		    	    .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
-		    	    .create();
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(json);
 
-		    String json = gson.toJson(result);
-
-		    response.setContentType("application/json");
-		    response.setCharacterEncoding("UTF-8");
-		    response.getWriter().write(json);
-		   
-		
-		
-	    
 	}
 
 }

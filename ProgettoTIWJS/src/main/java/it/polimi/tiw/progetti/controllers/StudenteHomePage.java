@@ -47,20 +47,17 @@ public class StudenteHomePage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("user");
-		/*HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("user") == null) {
 		    response.sendRedirect("loginPage.html");
 		    return;
 		}
 
-		User user = (User) session.getAttribute("user");
 		String role = user.getRole();
 
 		if (role == null || !role.equals("studente")) {
 		    response.sendRedirect("loginPage.html");
 		    return;
 		}
-		*/
 		
 
 		
@@ -68,11 +65,11 @@ public class StudenteHomePage extends HttpServlet {
 	    Gson gson = new GsonBuilder().create();
 	    response.setCharacterEncoding("UTF-8");
 	    response.setContentType("application/json");
-
+	    //carico la lista dei corsi relativi ad un certo studente
 	    try {
 	        if (corsoIdParam != null) {
-	            // ↳ Richiesta appelli di un corso
 	            int corsoId = Integer.parseInt(corsoIdParam);
+	            //carico la lista degli appelli relativi al corso selezionato
 	            CorsoDAO corsoDAO = new CorsoDAO(connection, corsoId);
 	            List<Appello> appelli = corsoDAO.cercaAppelli();
 	            String json = gson.toJson(appelli);
@@ -80,7 +77,6 @@ public class StudenteHomePage extends HttpServlet {
 	            response.getWriter().write(json);
 	            return;
 	        } else {
-	            // ↳ Richiesta corsi del docente
 	        	StudenteDAO studenteDAO = new StudenteDAO(connection, user.getId());
 	            List<Corso> corsi = studenteDAO.cercaCorsi();
 	            String json = gson.toJson(corsi);

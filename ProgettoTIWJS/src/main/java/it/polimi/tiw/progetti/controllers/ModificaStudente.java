@@ -53,7 +53,7 @@ public class ModificaStudente extends HttpServlet {
 			response.getWriter().println("nella doGet di modifica studente uno dei parametri non c'è");
 			return;
 		}
-
+		//mostro le informazioni del singolo studente selezionato dopo aver premuto tasto modifica
 		try {
 			InfoStudenteAppello infostud = studenteDAO.cercoInfoStudentePubblicatoperAppello(appid);
 			Gson gson = new Gson();
@@ -88,7 +88,7 @@ public class ModificaStudente extends HttpServlet {
 			response.getWriter().println("nella doPost di modifica studente uno dei parametri non c'è");
 			return;
 		}
-
+		//modifico nel DB il voto dello studente selezionato con il tasto modifica, cliccando su salva modifiche
 		try {
 			studenteDAO.aggiornaVotoEStato(idapp, voto);
 			response.setStatus(HttpServletResponse.SC_OK);

@@ -45,23 +45,12 @@ public class DocenteHomePage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("user");
-		/*HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("user") == null) {
 		    response.sendRedirect("loginPage.html");
 		    return;
 		}
-
-		User user = (User) session.getAttribute("user");
-		String role = user.getRole();
-
-		if (role == null || !role.equals("docente")) {
-		    response.sendRedirect("loginPage.html");
-		    return;
-		}*/
 		
-
-		
-
+		//caricamenteo della lista dei corsi e dei rispettivi appelli riferiti al docente
 		String corsoIdParam = request.getParameter("corsoId");
 	    Gson gson = new GsonBuilder().create();
 	    response.setCharacterEncoding("UTF-8");
@@ -69,7 +58,6 @@ public class DocenteHomePage extends HttpServlet {
 
 	    try {
 	        if (corsoIdParam != null) {
-	            // ↳ Richiesta appelli di un corso
 	            int corsoId = Integer.parseInt(corsoIdParam);
 	            CorsoDAO corsoDAO = new CorsoDAO(connection, corsoId);
 	            List<Appello> appelli = corsoDAO.cercaAppelli();
@@ -78,7 +66,6 @@ public class DocenteHomePage extends HttpServlet {
 	            response.getWriter().write(json);
 	            return;
 	        } else {
-	            // ↳ Richiesta corsi del docente
 	            DocenteDAO docenteDAO = new DocenteDAO(connection, user.getId());
 	            List<Corso> corsi = docenteDAO.cercaCorsi();
 	            String json = gson.toJson(corsi);

@@ -74,7 +74,7 @@ public class AppelloDAO {
 		}
 		return infoIscrtittiList;
 	}
-	
+	//aggiorna lo stato di valutazione a pubblicato degli studenti inseriti
 	public void aggiornaPubblicati() throws SQLException{
 		String query = "UPDATE esame "
 		        + "SET statodivalutazione = 'PUBBLICATO' "

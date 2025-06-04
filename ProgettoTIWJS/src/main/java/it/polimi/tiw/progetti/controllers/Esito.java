@@ -53,6 +53,7 @@ public class Esito extends HttpServlet {
 		int corsoId = Integer.parseInt(corsoIdParam);
 		StudenteDAO studenteDAO = new StudenteDAO(connection,user.getId());
 
+		//carico informazioni riguardanti l'esame dello studente
 		InfoStudenteAppello infostud = null;
 		try {
 			infostud = studenteDAO.cercoInfoStudentePubblicatoperAppello(appelloId);
@@ -84,7 +85,7 @@ public class Esito extends HttpServlet {
 		StudenteDAO studenteDAO = new StudenteDAO(connection,user.getId());
 		
 		
-		
+		//aggiorno lo stato di valutazione nel DB a rifiutato
 		try {
 			studenteDAO.aggiornaRifiutato(appelloId);
 		} catch (SQLException e) {

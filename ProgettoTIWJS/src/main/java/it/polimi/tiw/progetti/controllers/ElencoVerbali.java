@@ -41,6 +41,7 @@ public class ElencoVerbali extends HttpServlet {
 		User user = (User) request.getSession().getAttribute("user");
 		DocenteDAO docenteDAO = new DocenteDAO(connection, user.getId());
 		
+		//carica la lista dei verbali
 		try {
 			List<InfoVerbaleDocente> infoVerbale = docenteDAO.cercaVerbale();
 			Gson gson = new Gson();

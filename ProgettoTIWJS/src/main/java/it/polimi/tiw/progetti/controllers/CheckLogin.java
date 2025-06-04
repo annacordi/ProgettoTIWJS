@@ -38,12 +38,13 @@ public class CheckLogin extends HttpServlet {
 		String pwd = null;
 		usrn = request.getParameter("username");
 		pwd = request.getParameter("pwd");
+		//controllo validità parametri
 		if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Incorrect credential js");
 			return;
 		}
-		// query db to authenticate for user
+		//controllo la presena delle credenziali nel database
 		UserDAO userDao = new UserDAO(connection);
 		User user = null;
 		try {
@@ -56,8 +57,7 @@ public class CheckLogin extends HttpServlet {
 
 		}
 
-		// If the user exists, add info to the session and go to home page, otherwise
-		// return an error status code and message
+		//utente non presente nel database
 		if (user == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.getWriter().println("Credenziali errate");

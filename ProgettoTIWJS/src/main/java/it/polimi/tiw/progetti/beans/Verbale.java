@@ -10,15 +10,6 @@ public class Verbale {
     private Date dataapp;
     private LocalTime ora;
     private int idapp;
-    private List<InfoIscritti> infoiscritti;
-    
-    public List<InfoIscritti> getInfoiscritti() {
-        return infoiscritti;
-    }
-
-    public void setInfoiscritti(List<InfoIscritti> infoiscritti) {
-        this.infoiscritti = infoiscritti;
-    }
 
     public int getIdverb() {
         return idverb;

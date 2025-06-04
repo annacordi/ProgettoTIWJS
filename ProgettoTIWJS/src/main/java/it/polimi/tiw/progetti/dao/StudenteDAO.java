@@ -65,7 +65,7 @@ public class StudenteDAO {
 		}
 		return appelli;
 	}
-	
+	//cerco informazioni di uno studente per uno specifico appello usato nella pagina esito
 	public InfoStudenteAppello cercoInfoStudentePubblicatoperAppello(int idapp) throws SQLException {
 	    InfoStudenteAppello infostudenteappello = new InfoStudenteAppello();
 	    String query = "SELECT u.matricola, u.cognome, u.nome, u.email, u.corsolaurea, " +
@@ -97,7 +97,7 @@ public class StudenteDAO {
 	    }
 	    return infostudenteappello;
 	}
-	
+	//viene aggiornato il voto e lo stato di valutazione quando viene modificato il voto dal docente
 	public void aggiornaVotoEStato(int idapp, String voto) throws SQLException {
 	    String query = "UPDATE esame SET voto = ?, statodivalutazione = ? WHERE idapp = ? AND idstudente = ?;";
 	    try (PreparedStatement pstatement = con.prepareStatement(query)) {
@@ -108,7 +108,7 @@ public class StudenteDAO {
 	        pstatement.executeUpdate();
 	    }
 	}
-	
+	//aggiorna il voto a rifiutato dopo il rifiuto dello studente
 	public void aggiornaRifiutato(int idapp) throws SQLException {
 		String query = "UPDATE esame " +
                 "SET statodivalutazione = 'RIFIUTATO' " +
