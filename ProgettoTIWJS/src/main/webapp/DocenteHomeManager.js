@@ -8,9 +8,10 @@
 
 
 	window.addEventListener("load", () => {
-		if (sessionStorage.getItem("username") == null) {
+		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role")!="docente") {
 			window.location.href = "loginPage.html";
 		} else {//display initial content
+			
 			pageOrchestrator.start();
 			pageOrchestrator.refresh()
 		}
@@ -27,7 +28,7 @@
 	function Corsi(_corsiTable, _corsiBody) {
 		this.corsiTable = _corsiTable;
 		this.corsiBody = _corsiBody;
-		this.messageContainer = document.getElementById("message"); // ← AGGIUNGI QUESTO
+		this.messageContainer = document.getElementById("message"); 
 
 
 		this.reset = function() {

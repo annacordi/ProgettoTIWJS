@@ -16,13 +16,13 @@ import java.io.IOException;
 /**
  * Servlet Filter implementation class Checker
  */
-public class Checker extends HttpFilter implements Filter {
+public class Checker implements Filter {
        
     /**
      * @see HttpFilter#HttpFilter()
      */
     public Checker() {
-        super();
+        //super();
         // TODO Auto-generated constructor stub
     }
 
@@ -45,16 +45,16 @@ public class Checker extends HttpFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/loginPage.html";
-		String path = req.getRequestURI();
+		//String path = req.getRequestURI();
 
-		if (path.endsWith("loginPage.html") || path.endsWith("CheckLogin")) {
+		/*if (path.endsWith("loginPage.html") || path.endsWith("CheckLogin")) {
 		    chain.doFilter(request, response); // lasciali passare
 		    return;
-		}
+		}*/
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
-			System.out.print("user is null");
+			//System.out.print("user is null");
 			res.sendRedirect(loginpath);
 			return;
 		}

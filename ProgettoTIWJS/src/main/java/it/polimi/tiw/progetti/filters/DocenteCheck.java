@@ -18,7 +18,7 @@ import it.polimi.tiw.progetti.beans.User;
 /**
  * Servlet Filter implementation class DocenteChecker
  */
-public class DocenteCheck extends HttpFilter implements Filter {
+public class DocenteCheck implements Filter {
        
     /**
      * @see HttpFilter#HttpFilter()
@@ -52,19 +52,25 @@ public class DocenteCheck extends HttpFilter implements Filter {
 		
 		u = (User) s.getAttribute("user");
 		if(u==null) {
-			System.out.print("Docente user è vuoto\n");
+			//System.out.print("Docente user è vuoto\n");
+			//s.invalidate();
+			//res.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			res.sendRedirect(loginpath);
 			return;
 		
 		}
-		System.out.print("Il ruolo è \n" + u.getRole());
+		System.out.print("Il ruolo è" + u.getRole() + "\n");
 		if (!u.getRole().equals("docente")) {
-			res.sendRedirect(loginpath);
+			//s.invalidate();
+            //System.out.println("Redirecting to login - invalid role");
+            //res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            res.sendRedirect(loginpath);
 
 			return;
 		}
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
+		
 	}
 
 	/**

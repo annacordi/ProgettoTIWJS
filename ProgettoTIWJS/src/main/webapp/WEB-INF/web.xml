@@ -14,7 +14,7 @@
 	</context-param>
 	<context-param>
 		<param-name>dbPassword</param-name>
-		<param-value>1234</param-value>
+		<param-value>Hey2me2!!!</param-value>
 	</context-param>
 	<context-param>
 		<param-name>dbDriver</param-name>
@@ -44,6 +44,7 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>DocenteCheck</filter-name>
+		<url-pattern>/docenteHomePage.html</url-pattern>
 		<url-pattern>/DocenteHomePage</url-pattern>
 		<url-pattern>/ElencoVerbali</url-pattern>
 		<url-pattern>/Iscritti</url-pattern>
@@ -52,6 +53,7 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>StudenteCheck</filter-name>
+		<url-pattern>/studenteHomePage.html</url-pattern>
 		<url-pattern>/Esito</url-pattern>
 		<url-pattern>/StudenteHomePage</url-pattern>
 	</filter-mapping>

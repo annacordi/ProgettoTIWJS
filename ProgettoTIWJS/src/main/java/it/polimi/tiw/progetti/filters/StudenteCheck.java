@@ -19,7 +19,7 @@ import it.polimi.tiw.progetti.beans.User;
 /**
  * Servlet Filter implementation class StudenteChecker
  */
-public class StudenteCheck extends HttpFilter implements Filter {
+public class StudenteCheck implements Filter {
        
     /**
      * @see HttpFilter#HttpFilter()
@@ -46,23 +46,25 @@ public class StudenteCheck extends HttpFilter implements Filter {
 		String loginpath = req.getServletContext().getContextPath() + "/loginPage.html";
 
 		HttpSession s = req.getSession();
-	    if (s == null) {
-	        res.sendRedirect(loginpath);
-	        return;
-	    }
 		User u = null;
         // check if the client is a worker
 		u = (User) s.getAttribute("user");
 		if(u==null) {
 			System.out.print("StudenteUser è vuoto\n");
+			//res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			res.sendRedirect(loginpath);
+			//s.invalidate();
+			return;
+
 		
 		}
-		System.out.print("Il ruolo è \n" + u.getRole());
+		System.out.print("Il ruolo è " + u.getRole() +"\n");
 		if (!u.getRole().equals("studente")) {
-			System.out.print("Sono nell'if");
-
-		    res.sendRedirect(loginpath);
-
+			
+            //System.out.println("Redirecting to login - invalid role");
+            //res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            res.sendRedirect(loginpath);
+			//s.invalidate();
 			return;
 		}
 

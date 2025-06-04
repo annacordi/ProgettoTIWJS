@@ -45,14 +45,24 @@ public class StudenteHomePage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		User user = (User) request.getSession().getAttribute("user");
-		/*
 		HttpSession session = request.getSession(false);
-		if (session == null || !"studente".equals(session.getAttribute("role"))) {
-		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		User user = (User) session.getAttribute("user");
+		/*HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("user") == null) {
+		    response.sendRedirect("loginPage.html");
+		    return;
+		}
+
+		User user = (User) session.getAttribute("user");
+		String role = user.getRole();
+
+		if (role == null || !role.equals("studente")) {
+		    response.sendRedirect("loginPage.html");
 		    return;
 		}
 		*/
+		
+
 		
 		String corsoIdParam = request.getParameter("corsoId");
 	    Gson gson = new GsonBuilder().create();

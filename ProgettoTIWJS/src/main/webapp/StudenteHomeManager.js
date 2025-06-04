@@ -3,9 +3,10 @@
 	var corsiTable, corsiBody, appelliSection, appelliBody;
 
 	window.addEventListener("load", () => {
-		if (sessionStorage.getItem("username") == null) {
+		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role")!="studente") {
 			window.location.href = "loginPage.html";
-		} else {//display initial content
+		} else {
+			//display initial content
 			pageOrchestrator.start();
 			pageOrchestrator.refresh()
 		}
@@ -16,7 +17,7 @@
 				window.location.href = "loginPage.html";
 			});
 		
-
+ 
 	}, false)
 
 	function Corsi(_corsiTable, _corsiBody) {
