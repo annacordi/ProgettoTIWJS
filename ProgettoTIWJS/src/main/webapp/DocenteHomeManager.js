@@ -1,26 +1,21 @@
 (function() {
-	var pageOrchestrator = new PageOrchestrator();
-	var corsiTable, corsiBody, appelliSection, appelliBody, verbaleSection;
-
-	const URL_DOCENTE_HOME = "DocenteHomePage";
-	const URL_ISCRITTI = "Iscritti";
-
+	let pageOrchestrator = new PageOrchestrator();
 
 
 	window.addEventListener("load", () => {
-		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role")!="docente") {
+		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role") != "docente") {
 			window.location.href = "loginPage.html";
-		} else {//display initial content
-			
+		} else {
 			pageOrchestrator.start();
 			pageOrchestrator.refresh()
 		}
 		document.getElementById("username").textContent = sessionStorage.getItem("username");
 		document.getElementById("role").textContent = sessionStorage.getItem("role");
+		//azione di logout
 		document.getElementById("logoutBtn").addEventListener("click", () => {
-				sessionStorage.clear(); 
-				window.location.href = "loginPage.html";
-			});
+			sessionStorage.clear();
+			window.location.href = "loginPage.html";
+		});
 
 
 	}, false)
@@ -28,20 +23,22 @@
 	function Corsi(_corsiTable, _corsiBody) {
 		this.corsiTable = _corsiTable;
 		this.corsiBody = _corsiBody;
-		this.messageContainer = document.getElementById("message"); 
+		this.messageContainer = document.getElementById("message");
 
 
 		this.reset = function() {
 			this.corsiTable.style.visibility = "hidden";
 		}
+		//mostra la lista dei corsi di un certo docente
 		this.show = function() {
 			var self = this;
-			makeCall("GET", URL_DOCENTE_HOME, null,
+			makeCall("GET", "DocenteHomePage", null,
 				function(req) {
 					if (req.readyState == XMLHttpRequest.DONE) {
 						var message = req.responseText;
 						if (req.status == 200) {
 							var corsiListToShow = JSON.parse(message);
+							//se non ci sono corsi da mostrare
 							if (corsiListToShow.length == 0) {
 								self.messageContainer.textContent = "No CORSI";
 								return;
@@ -61,7 +58,7 @@
 		};
 
 		this.update = function(corsiList) {
-			this.corsiBody.innerHTML = ""; // Pulisce righe precedenti
+			this.corsiBody.innerHTML = "";
 			corsiList.forEach(corso => {
 				let row = document.createElement("tr");
 				let cell = document.createElement("td");
@@ -69,7 +66,8 @@
 				row.appendChild(cell);
 
 				row.addEventListener("click", () => {
-					pageOrchestrator.appelli.show(corso.idcorso); // Richiama funzione con id corso
+					//chiama la funzione per mostrare gli appelli di un certo corso
+					pageOrchestrator.appelli.show(corso.idcorso);
 				});
 
 				this.corsiBody.appendChild(row);
@@ -85,7 +83,7 @@
 			this.appelliSection.style.display = "none";
 			this.appelliBody.innerHTML = "";
 		};
-
+		//mostra gli appelli
 		this.show = function(corsoId) {
 			this.reset();
 			makeCall("GET", "DocenteHomePage?corsoId=" + corsoId, null, (req) => {
@@ -95,11 +93,13 @@
 						appelli.forEach(appello => {
 							let row = document.createElement("tr");
 							let cell = document.createElement("td");
-							cell.textContent = appello.data; // Assumi che abbia campo `data`
+							//gli appelli vengono mostrati in base alla data
+							cell.textContent = appello.data;
 							row.appendChild(cell);
 
 							row.addEventListener("click", () => {
-								pageOrchestrator.iscritti.show(appello.idapp); // Trigger Iscritti
+								//chiamo la funzione iscritti per mostrare tutti gli studenti iscritti ad un certo appello
+								pageOrchestrator.iscritti.show(appello.idapp);
 							});
 
 							this.appelliBody.appendChild(row);
@@ -113,15 +113,13 @@
 		};
 	}
 
-
 	function Iscritti(iscrittiSection, iscrittiBody) {
 		this.iscrittiSection = iscrittiSection;
 		this.iscrittiBody = iscrittiBody;
 		this.currentAppelloId = null;
 
-		// Add this:
-		this.iscrittiList = [];  // store all iscritti here
-		this.currentSort = { key: null, ascending: true };  // track current sort state
+		this.iscrittiList = [];
+		this.currentSort = { key: null, ascending: true };
 
 		this.reset = function() {
 			this.iscrittiSection.style.display = "none";
@@ -131,6 +129,7 @@
 			this.currentSort = { key: null, ascending: true };
 		};
 
+		//salvo in iscrittilist gli studenti di questo appello
 		this.show = function(appelloId) {
 			this.reset();
 			this.currentAppelloId = appelloId;
@@ -153,7 +152,7 @@
 			});
 		};
 
-		// Add this method for rendering the table rows from a list:
+		//viene creata la tabella con gli studenti presenti in iscrittilist
 		this.renderTable = function(list) {
 			this.iscrittiBody.innerHTML = "";
 			list.forEach(studente => {
@@ -164,6 +163,7 @@
 					row.appendChild(cell);
 				});
 
+				//viene mostrato il bottone di modifica con un suo listener
 				let azioniCell = document.createElement("td");
 				if (!["PUBBLICATO", "RIFIUTATO", "VERBALIZZATO"].includes(studente["statodivalutazione"])) {
 					let modificaButton = document.createElement("button");
@@ -183,29 +183,26 @@
 			});
 		};
 
-		// Add this method to sort the list and re-render
+		//funzione usata per riordinare i valori nella tabella
 		this.sortBy = function(key) {
 			if (this.currentSort.key === key) {
-				this.currentSort.ascending = !this.currentSort.ascending; // toggle order
+				this.currentSort.ascending = !this.currentSort.ascending;
 			} else {
 				this.currentSort.key = key;
-				this.currentSort.ascending = true; // default ascending
+				this.currentSort.ascending = true;
 			}
 
 			const ascending = this.currentSort.ascending;
-
 			this.iscrittiList.sort((a, b) => {
 				let valA = a[key];
 				let valB = b[key];
 
-				// Try to parse as numbers for numeric sort (e.g. voto, matricola)
 				let numA = parseFloat(valA);
 				let numB = parseFloat(valB);
 				if (!isNaN(numA) && !isNaN(numB)) {
 					valA = numA;
 					valB = numB;
 				} else {
-					// For strings, lowercase for case-insensitive comparison
 					if (typeof valA === "string") valA = valA.toLowerCase();
 					if (typeof valB === "string") valB = valB.toLowerCase();
 				}
@@ -218,7 +215,7 @@
 			this.renderTable(this.iscrittiList);
 		};
 
-		// Attach event listeners to headers for sorting (call once)
+		//funzione utilizzata per aggiungere ai titoli della tabella le funzionalità di riordino
 		this.attachSortHandlers = function() {
 			const headers = this.iscrittiSection.querySelectorAll("thead a[data-order]");
 			headers.forEach(header => {
@@ -230,48 +227,52 @@
 			});
 		};
 
+		//funzione per l'inserimento multiplo per piu studenti
 		this.showInserimentoMultiplo = function() {
 			const modal = document.getElementById("inserimentoMultiploModal");
 			const tbody = document.getElementById("inserimentoMultiploBody");
 			tbody.innerHTML = "";
 
-			// Filtra iscritti non ancora inseriti
+			// filtra iscritti che hanno lo stato di valutazione a non inserito
 			const nonInseriti = this.iscrittiList.filter(s => s.statodivalutazione === "NON_INSERITO");
 
 			if (nonInseriti.length === 0) {
-				tbody.innerHTML = "<tr><td colspan='4'>Nessuno studente nello stato NON_INSERITO</td></tr>";
+				const row = document.createElement("tr");
+				const cell = document.createElement("td");
+				cell.setAttribute("colspan", "6");
+				cell.textContent = "Nessuno studente nello stato NON_INSERITO";
+				row.appendChild(cell);
+				tbody.appendChild(row);
 			} else {
 				nonInseriti.forEach(studente => {
-					let row = document.createElement("tr");
-					row.setAttribute("data-studente-id", studente.id); // 👈 store studente.id
-					row.innerHTML = `
-					        <td>${studente.matricola}</td>
-					        <td>${studente.nome}</td>
-					        <td>${studente.cognome}</td>
-							<td>${studente.email}</td>
-							<td>${studente.corsolaurea}</td>
-							<td><input type="text" name="voto"></td>
-					      `;
+					const row = document.createElement("tr");
+					row.setAttribute("data-studente-id", studente.id);
+					const fields = ["matricola", "nome", "cognome", "email", "corsolaurea"];
+					fields.forEach(field => {
+						const cell = document.createElement("td");
+						cell.textContent = studente[field];
+						row.appendChild(cell);
+					});
+					const votoCell = document.createElement("td");
+					const input = document.createElement("input");
+					input.type = "text";
+					input.name = "voto";
+					votoCell.appendChild(input);
+					row.appendChild(votoCell);
+
 					tbody.appendChild(row);
 				});
 			}
-
-
-
 			modal.style.display = "flex";
 			document.body.style.overflow = "hidden";
 		};
-
 	}
 
-
-
-
+	//mostra la pagina per la modifica del voto dello studente
 	function mostraModificaStudente(iscritto) {
-		// Pulisce eventuali messaggi
 		document.getElementById("message").textContent = "";
 
-		// Mostra solo la sezione di modifica
+		//nascondo le altre sezioni
 		document.getElementById("corsiSection").style.display = "none";
 		document.getElementById("appelliSection").style.display = "none";
 		document.getElementById("iscrittiSection").style.display = "none";
@@ -293,7 +294,7 @@
 							document.getElementById("modVoto").value = studente.voto || "";
 							document.getElementById("modStato").textContent = studente.statodivalutazione;
 
-							// Store IDs in hidden fields if needed
+							//salva lo studente id e l'id dell'appello
 							document.getElementById("modificaStudenteForm").dataset.studenteId = studente.id;
 							document.getElementById("modificaStudenteForm").dataset.appId = studente.idapp;
 
@@ -310,8 +311,9 @@
 
 	}
 
+	//funzione per mostrare il verbale
 	function mostraVerbale(verbale, infoverbalizzati) {
-		// Mostra la section verbale e nasconde le altre
+		//nascondo le altre sezioni
 		document.getElementById("corsiSection").style.display = "none";
 		document.getElementById("corsiTable").style.display = "none";
 		document.getElementById("appelliSection").style.display = "none";
@@ -320,7 +322,7 @@
 		const verbaleSection = document.getElementById('verbaleSection');
 		verbaleSection.style.display = 'block';
 
-		// Popola dati verbale
+		//mostro i dati relatici al verbale
 		document.getElementById('verbaleId').textContent = verbale.idverb || '-';
 		document.getElementById('verbaleData').textContent = verbale.data || '-';
 		document.getElementById('verbaleOra').textContent = verbale.ora || '-';
@@ -328,8 +330,9 @@
 
 
 		const tbody = document.getElementById('infoverbalizzatiBody');
-		tbody.innerHTML = ''; // svuota la tabella
+		tbody.innerHTML = '';
 
+		//mostro i dati relativi agli studenti verbalizzati
 		document.getElementById('infoverbalizzatiBody');
 		infoverbalizzati.forEach(item => {
 			let row = document.createElement("tr");
@@ -343,20 +346,18 @@
 		});
 	}
 
-
+	//funzione per mostrare l'elenco dei verbali
 	function mostraElencoVerbali() {
-		// Pulisce eventuali messaggi
+		//nascondo le altre sezioni
 		document.getElementById("corsiSection").style.display = "none";
 		document.getElementById("corsiTable").style.display = "none";
 		document.getElementById("appelliSection").style.display = "none";
 		document.getElementById("iscrittiSection").style.display = "none";
 		document.getElementById("message").textContent = "";
 
-		// Mostra solo la sezione di modifica
 		document.getElementById("elencoVerbaliSection").style.display = "block";
 
-
-
+		//viene mostrata la lista dei verbali
 		this.show = function() {
 			var self = this;
 			makeCall("GET", "ElencoVerbali", null, (req) => {
@@ -381,10 +382,7 @@
 			});
 		}
 		show();
-
 	}
-
-
 
 	function PageOrchestrator() {
 		this.corsi = null;
@@ -415,10 +413,8 @@
 				makeCall("POST", "PaginaVerbale?appId=" + this.iscritti.currentAppelloId, null, (req) => {
 					if (req.readyState === XMLHttpRequest.DONE) {
 						if (req.status === 200) {
-							// la servlet risponde con verbale e infoverbalizzati in html, quindi dobbiamo modificare la servlet per restituire JSON oppure parse HTML...
-							// Qui assumiamo che la servlet torni JSON (modifica servlet se serve)
+							// la servlet risponde con verbale e infoverbalizzati in html
 
-							// Se la servlet ritorna JSON, deserializziamo:
 							let response = null;
 							try {
 								response = JSON.parse(req.responseText);
@@ -436,10 +432,12 @@
 				});
 			});
 
+			//bottone per mostrare verbali si un certo docente
 			document.getElementById("verbaliButton").addEventListener("click", () => {
 				mostraElencoVerbali();
 			})
 
+			//bottone per pubblicare 
 			document.getElementById("pubblicaButton").addEventListener("click", () => {
 				if (this.iscritti.currentAppelloId == null) {
 					document.getElementById("message").textContent = "Nessun appello selezionato.";
@@ -448,7 +446,7 @@
 				makeCall("POST", "Iscritti?appId=" + this.iscritti.currentAppelloId, null, (req) => {
 					if (req.readyState === XMLHttpRequest.DONE) {
 						if (req.status === 200) {
-							// Dopo il POST, ricarica la lista degli iscritti
+							//ricarico la lista degli iscritti
 							this.iscritti.show(this.iscritti.currentAppelloId);
 							document.getElementById("message").textContent = "Voti pubblicati con successo.";
 						} else {
@@ -458,57 +456,34 @@
 				});
 			});
 
+			//bottone per l'inserimento multiplo
 			document.getElementById("inserimentoMultiploBtn").addEventListener("click", () => {
 				this.iscritti.showInserimentoMultiplo();
 			});
 
+			//bottone per chiudere la finestra di inserimento multiplo
 			document.getElementById("closeInserimentoModal").addEventListener("click", () => {
 				document.getElementById("inserimentoMultiploModal").style.display = "none";
 			});
-			/*
-						document.addEventListener("DOMContentLoaded", function() {
-							const inserimentoBtn = document.getElementById("inserimentoMultiploBtn");
-							const modal = document.getElementById("inserimentoMultiploModal");
-							const closeBtn = document.getElementById("closeInserimentoModal");
-			
-							inserimentoBtn.addEventListener("click", function() {
-								modal.style.display = "flex";
-								document.body.style.overflow = "hidden"; // blocca lo scroll sotto
-							});
-			
-							closeBtn.addEventListener("click", function() {
-								modal.style.display = "none";
-								document.body.style.overflow = "auto"; // riattiva lo scroll
-							});
-			
-							// Chiudi modale se clicchi fuori
-							window.addEventListener("click", function(event) {
-								if (event.target === modal) {
-									modal.style.display = "none";
-									document.body.style.overflow = "auto";
-								}
-							});
-						});
-						*/
 
-
+			//modifica dello studente
 			document.getElementById("modificaStudenteForm").addEventListener("submit", function(e) {
 				e.preventDefault();
 				//const form = e.target;
 				const studenteId = parseInt(document.getElementById("modificaStudenteForm").dataset.studenteId, 10);
 				const appId = parseInt(document.getElementById("modificaStudenteForm").dataset.appId, 10);
 				const voto = document.getElementById("modVoto").value;
-				
+
 				const validi = [
-				  "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-				  "11", "12", "13", "14", "15", "16", "17", "18",
-				  "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30L", "30l", "assente"
+					"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+					"11", "12", "13", "14", "15", "16", "17", "18",
+					"19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "30L", "30l", "assente"
 				];
 
-					if (!validi.includes(voto)) {
-						document.getElementById("message").textContent = "Voto non valido, riprova.";
-						return;
-					}
+				if (!validi.includes(voto)) {
+					document.getElementById("message").textContent = "Voto non valido, riprova.";
+					return;
+				}
 
 				makeCall("POST", "ModificaStudente?studenteId=" + studenteId + "&appId=" + appId + "&voto=" + voto, null, (req) => {
 					if (req.readyState === XMLHttpRequest.DONE) {
@@ -526,13 +501,13 @@
 			});
 
 
+			//viene chiamata la post per ogni studente selezionato dall'inserimento multiplo
 			document.getElementById("inserimentoMultiploForm").addEventListener("submit", function(event) {
 				event.preventDefault();
 
 				const appId = pageOrchestrator.iscritti.currentAppelloId; // get current appId
 				const rows = document.querySelectorAll("#inserimentoMultiploBody tr");
 
-				// Create an array of promises for all the POST calls
 				const requests = Array.from(rows).map(row => {
 					const studenteId = row.getAttribute("data-studente-id");
 					const votoInput = row.querySelector("input[name='voto']");
@@ -553,24 +528,19 @@
 							});
 						});
 					} else {
-						return Promise.resolve(); // Skip empty rows
+						return Promise.resolve(); 
 					}
 				});
 
-				// Wait for all requests to complete before updating
+				//aspetto che tutte le post siano terminate
 				Promise.all(requests).then(() => {
-					pageOrchestrator.iscritti.show(appId); // Refresh iscritti after all votes are inserted
+					pageOrchestrator.iscritti.show(appId); 
 					document.getElementById("inserimentoMultiploModal").style.display = "none";
 					document.body.style.overflow = "auto";
 				}).catch(error => {
 					console.error("Errore durante l'inserimento dei voti:", error);
 				});
 			});
-
-
-
-
-
 
 		};
 
