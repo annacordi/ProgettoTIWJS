@@ -1,6 +1,5 @@
 (function() {
-	var pageOrchestrator = new PageOrchestrator();
-	var corsiTable, corsiBody, appelliSection, appelliBody;
+	let pageOrchestrator = new PageOrchestrator();
 
 	window.addEventListener("load", () => {
 		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role") != "studente") {

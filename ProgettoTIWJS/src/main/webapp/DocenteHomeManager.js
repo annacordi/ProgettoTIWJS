@@ -1,4 +1,4 @@
-(function() {
+(function() {//iife immediately invoked function expression
 	let pageOrchestrator = new PageOrchestrator();
 
 
