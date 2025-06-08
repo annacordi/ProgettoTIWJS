@@ -3,7 +3,7 @@
 	var corsiTable, corsiBody, appelliSection, appelliBody;
 
 	window.addEventListener("load", () => {
-		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role")!="studente") {
+		if (sessionStorage.getItem("username") == null || sessionStorage.getItem("role") != "studente") {
 			window.location.href = "loginPage.html";
 		} else {
 			//display initial content
@@ -13,11 +13,11 @@
 		document.getElementById("username").textContent = sessionStorage.getItem("username");
 		document.getElementById("role").textContent = sessionStorage.getItem("role");
 		document.getElementById("logoutBtn").addEventListener("click", () => {
-				sessionStorage.clear(); 
-				window.location.href = "loginPage.html";
-			});
-		
- 
+			sessionStorage.clear();
+			window.location.href = "loginPage.html";
+		});
+
+
 	}, false)
 
 	function Corsi(_corsiTable, _corsiBody) {
@@ -61,6 +61,8 @@
 				let row = document.createElement("tr");
 				let cell = document.createElement("td");
 				cell.textContent = corso.nomecorso;
+				cell.style.textDecoration = "underline";
+				cell.style.color = "#007bff";
 				row.appendChild(cell);
 
 				row.addEventListener("click", () => {
@@ -92,6 +94,8 @@
 							let row = document.createElement("tr");
 							let cell = document.createElement("td");
 							cell.textContent = appello.data; // Assumi che abbia campo `data`
+							cell.style.textDecoration = "underline";
+							cell.style.color = "#007bff";
 							row.appendChild(cell);
 
 							row.addEventListener("click", () => {
@@ -181,7 +185,7 @@
 						const pCorsodiLaurea = document.createElement("p");
 						const strongCorsoL = document.createElement("strong");
 						strongCorsoL.textContent = "Corso di laurea: ";
-						pCorsodiLaurea.appendChild(strongCorsoL );
+						pCorsodiLaurea.appendChild(strongCorsoL);
 						pCorsodiLaurea.appendChild(document.createTextNode(esito.corsolaurea));
 
 						const pVoto = document.createElement("p");
@@ -229,35 +233,35 @@
 		};
 
 		// Drag & Drop implementation
-		    // 1. Set dataTransfer on dragstart
-		    this.esitoContent.addEventListener("dragstart", (ev) => {
-		        ev.dataTransfer.setData("text/plain", "esitoContentDragged");
-		        // You can style the dragging element if you want
-		    });
+		// 1. Set dataTransfer on dragstart
+		this.esitoContent.addEventListener("dragstart", (ev) => {
+			ev.dataTransfer.setData("text/plain", "esitoContentDragged");
+			// You can style the dragging element if you want
+		});
 
-		    // 2. Allow drop on trashcan
-		    this.trashcan.addEventListener("dragover", (ev) => {
-		        ev.preventDefault(); // allow drop
-		        this.trashcan.style.filter = "brightness(0.8)"; // optional highlight effect
-		    });
+		// 2. Allow drop on trashcan
+		this.trashcan.addEventListener("dragover", (ev) => {
+			ev.preventDefault(); // allow drop
+			this.trashcan.style.filter = "brightness(0.8)"; // optional highlight effect
+		});
 
-		    this.trashcan.addEventListener("dragleave", (ev) => {
-		        this.trashcan.style.filter = "none"; // remove highlight effect
-		    });
+		this.trashcan.addEventListener("dragleave", (ev) => {
+			this.trashcan.style.filter = "none"; // remove highlight effect
+		});
 
-		    // 3. On drop, trigger rifiutaButton click logic
-		    this.trashcan.addEventListener("drop", (ev) => {
-		        ev.preventDefault();
-		        this.trashcan.style.filter = "none";
+		// 3. On drop, trigger rifiutaButton click logic
+		this.trashcan.addEventListener("drop", (ev) => {
+			ev.preventDefault();
+			this.trashcan.style.filter = "none";
 
-		        // You could also check ev.dataTransfer.getData to confirm
-		        const data = ev.dataTransfer.getData("text/plain");
-		        if (data === "esitoContentDragged") {
-		            // Trigger the rifiuta action programmatically
-		            document.getElementById("confirmModal").style.display = "flex";
-		        }
-		    });
-		
+			// You could also check ev.dataTransfer.getData to confirm
+			const data = ev.dataTransfer.getData("text/plain");
+			if (data === "esitoContentDragged") {
+				// Trigger the rifiuta action programmatically
+				document.getElementById("confirmModal").style.display = "flex";
+			}
+		});
+
 		this.rifiutaButton.addEventListener("click", () => {
 			if (!this.currentAppelloId || !this.currentCorsoId) return;
 
@@ -283,7 +287,7 @@
 			});
 			document.getElementById("confirmModal").style.display = "none";
 		});
-		
+
 		/*
 		// Modal buttons
 		document.getElementById("confirmRifiuta").addEventListener("click", () => {

@@ -63,6 +63,8 @@
 				let row = document.createElement("tr");
 				let cell = document.createElement("td");
 				cell.textContent = corso.nomecorso;
+				cell.style.textDecoration = "underline";
+				cell.style.color = "#007bff";
 				row.appendChild(cell);
 
 				row.addEventListener("click", () => {
@@ -95,6 +97,8 @@
 							let cell = document.createElement("td");
 							//gli appelli vengono mostrati in base alla data
 							cell.textContent = appello.data;
+							cell.style.textDecoration = "underline";
+							cell.style.color = "#007bff";
 							row.appendChild(cell);
 
 							row.addEventListener("click", () => {
@@ -528,13 +532,13 @@
 							});
 						});
 					} else {
-						return Promise.resolve(); 
+						return Promise.resolve();
 					}
 				});
 
 				//aspetto che tutte le post siano terminate
 				Promise.all(requests).then(() => {
-					pageOrchestrator.iscritti.show(appId); 
+					pageOrchestrator.iscritti.show(appId);
 					document.getElementById("inserimentoMultiploModal").style.display = "none";
 					document.body.style.overflow = "auto";
 				}).catch(error => {
